@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using DatecsEcr.Protocol;
 using DatecsEcr.Protocol.Datecs;
 using DatecsEcr.Helper;
@@ -48,6 +49,7 @@ namespace DatecsEcr
             if (_datecsPort.PortOpen())
             {
                 MHelper.WriteLog("Port COM" + portNum + " is opened");
+                _datecsPort.EventHandlersAddRemove(ClassPropertiesValueUpdate);
                 _datecsPort.EventHandlersAddRemove(MHelper.AfterDataUpdateHandler,
                     MHelper.ErrorHandler, MHelper.AfterStatusUpdateHandler);
             }
@@ -89,12 +91,12 @@ namespace DatecsEcr
         {
             if (value >= 1 && value <= 5)
             {
-                _datecsPort.SendCommand(Commands.PrintSettings, "D3");
+                _datecsPort.SendCommand(Commands.PrintSettings, "D" + value);
                 MHelper.WriteLog("SetPrintDensity(int value) value = " + value);
             }
             else
             {
-                _datecsPort.SendCommand(Commands.PrintSettings, "D" + value);
+                _datecsPort.SendCommand(Commands.PrintSettings, "D3");
                 MHelper.WriteLog("SetPrintDensity(int value) incorrect value. Set = 3 ", LogType.Error);
             }
         }
@@ -107,7 +109,7 @@ namespace DatecsEcr
 
         public void SetTaxName(int tax, string name)
         {
-            string paymentType;
+            string paymentType = string.Empty;
             switch (tax)
             {
                 case 1:
@@ -121,9 +123,6 @@ namespace DatecsEcr
                     break;
                 case 4:
                     paymentType = "L";
-                    break;
-                default:
-                    paymentType = "I";
                     break;
             }
             _datecsPort.SendCommand(Commands.AdditionalPaymentType, paymentType, name);
@@ -791,6 +790,19 @@ namespace DatecsEcr
         public static void MessageBoxShow(string mes)
         {
             System.Windows.Forms.MessageBox.Show(mes);
+        }
+
+        private void ClassPropertiesValueUpdate(object sender, DataUpdatedEventArgs e)
+        {
+            FieldInfo[] fieldsInfos = GetType().GetFields();
+            for (int i = 1; i < e.DataStringArray.Length; i++)
+            {
+                foreach (var item in fieldsInfos)
+                {
+                    if(item.Name == "s" + i)
+                        item.SetValue(this, e.DataStringArray[i]);
+                }
+            }
         }
     }
 }

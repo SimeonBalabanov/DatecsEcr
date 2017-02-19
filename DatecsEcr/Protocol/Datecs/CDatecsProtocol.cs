@@ -15,6 +15,7 @@ namespace DatecsEcr.Protocol.Datecs
         public event StatusErrorHandler StatusErrorOccured;
 
         public byte[] DataToHost { get; set; }
+
         public byte[] CommandToPrinter { get; set; }
         public byte[] DataToPrinter { get; private set; }
         public string StatusErrorMessage { get; private set; }
@@ -328,8 +329,13 @@ namespace DatecsEcr.Protocol.Datecs
             RefreshData();
             if (DataUpdated != null)
             {
-                DataUpdated(this, new DataUpdatedEventArgs(CommandToPrinter, DataToHost, DataToPrinter, Status));
+                DataUpdated(this, new DataUpdatedEventArgs(CommandToPrinter, DataToHost, DataToPrinter, Status, GetStringArrayFromDataPrinter(DataToHost)));
             }
+        }
+
+        private string[] GetStringArrayFromDataPrinter(byte[] dataToHost)
+        {
+            return MHelper.SplitBySeparator(dataToHost);
         }
 
         private static byte[] CsCount(byte[] array)

@@ -15,13 +15,15 @@ namespace DatecsEcr.Protocol.Datecs
         public byte[] DataToHost { get; private set; }
         public byte[] DataToPrinter { get; private set; }
         public byte[] Status { get; private set; }
+        public string[] DataStringArray { get; private set;}
 
-        public DataUpdatedEventArgs(byte[] command, byte[] data, byte[] toPrinter, byte[] status)
+        public DataUpdatedEventArgs(byte[] command, byte[] data, byte[] toPrinter, byte[] status, string[] dataStringArray = null)
         {
             Command = command;
             DataToHost = data;
             DataToPrinter = toPrinter;
             Status = status;
+            DataStringArray = dataStringArray;
         }
     }
 

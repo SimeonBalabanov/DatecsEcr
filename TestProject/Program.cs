@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DatecsEcr;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace TestProject
 {
