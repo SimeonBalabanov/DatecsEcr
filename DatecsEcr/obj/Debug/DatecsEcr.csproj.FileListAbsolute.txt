@@ -1,0 +1,16 @@
+C:\Users\user\Desktop\Projects\DatecsEcr\DatecsEcr\bin\Debug\DatecsEcr.dll
+C:\Users\user\Desktop\Projects\DatecsEcr\DatecsEcr\bin\Debug\DatecsEcr.pdb
+C:\Users\user\Desktop\Projects\DatecsEcr\DatecsEcr\obj\Debug\DatecsEcr.csprojResolveAssemblyReference.cache
+C:\Users\user\Desktop\Projects\DatecsEcr\DatecsEcr\obj\Debug\DatecsEcr.dll
+C:\Users\user\Desktop\Projects\DatecsEcr\DatecsEcr\obj\Debug\DatecsEcr.pdb
+C:\Users\user\Desktop\Projects\DatecsEcr\DatecsEcr\bin\Debug\TestProject.exe
+C:\Users\user\Desktop\Projects\DatecsEcr\DatecsEcr\bin\Debug\TestProject.pdb
+C:\Users\user\Desktop\Projects\DatecsEcr\DatecsEcr\bin\Debug\DatecsEcr.tlb
+C:\Users\Администратор\Desktop\РРО\DatecsEcr\DatecsEcr\bin\Debug\DatecsEcr.dll
+C:\Users\Администратор\Desktop\РРО\DatecsEcr\DatecsEcr\bin\Debug\DatecsEcr.pdb
+C:\Users\Администратор\Desktop\РРО\DatecsEcr\DatecsEcr\bin\Debug\DatecsEcr.tlb
+C:\Users\Администратор\Desktop\РРО\DatecsEcr\DatecsEcr\bin\Debug\TestProject.exe
+C:\Users\Администратор\Desktop\РРО\DatecsEcr\DatecsEcr\bin\Debug\TestProject.pdb
+C:\Users\Администратор\Desktop\РРО\DatecsEcr\DatecsEcr\obj\Debug\DatecsEcr.csprojResolveAssemblyReference.cache
+C:\Users\Администратор\Desktop\РРО\DatecsEcr\DatecsEcr\obj\Debug\DatecsEcr.dll
+C:\Users\Администратор\Desktop\РРО\DatecsEcr\DatecsEcr\obj\Debug\DatecsEcr.pdb
