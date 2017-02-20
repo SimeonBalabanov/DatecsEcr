@@ -249,7 +249,7 @@ namespace DatecsEcr.Helper
             return BitConverter.ToUInt16(arr, 0);
         }
 
-        public static void WriteLog(string text, LogType type = LogType.Normal)
+        public static void WriteLog(string text, LogType type = LogType.Normal, bool isMessageErrorShow = false)
         {
             StreamWriter SW;
             FileStream FS;
@@ -265,7 +265,7 @@ namespace DatecsEcr.Helper
                         break;
                     case LogType.Error:
                         FS = new FileStream(filename_critical_log, FileMode.Append);
-                        System.Windows.Forms.MessageBox.Show(text);
+                        if(isMessageErrorShow)System.Windows.Forms.MessageBox.Show(text);
                         break;
                     default:
                         FS = new FileStream(filename_log, FileMode.Append);

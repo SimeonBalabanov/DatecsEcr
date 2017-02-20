@@ -270,3 +270,15 @@
 20.02.2017 19:59:56 === Command: 122. Data: 
 20.02.2017 19:59:56 === GetLastDPAExchangeTime()
 20.02.2017 19:59:56 === Port is closed
+20.02.2017 21:31:06 === Port COM1 is opened
+20.02.2017 21:31:14 === GetArticlesInfo() 
+20.02.2017 21:31:20 === GetFirstFreeArticle()
+20.02.2017 21:31:22 === GetLastFreeArticle()
+20.02.2017 21:31:24 === GetLastDPAExchangeTime()
+20.02.2017 21:31:24 === Port is closed
+20.02.2017 21:34:14 === Port COM1 is opened
+20.02.2017 21:34:16 === GetArticlesInfo() 
+20.02.2017 21:34:18 === GetFirstFreeArticle()
+20.02.2017 21:34:20 === GetLastFreeArticle()
+20.02.2017 21:34:21 === GetLastDPAExchangeTime()
+20.02.2017 21:34:22 === Port is closed

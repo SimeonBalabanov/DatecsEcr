@@ -188,6 +188,14 @@ namespace DatecsEcr.Protocol.Datecs
                         StatusErrorMessage += "Не установлены дата/время. " + Environment.NewLine;
                         StatusErrorFlag = true;
                         StatusErrorOccurenceEventGenerate("Не установлены дата/время. ", 10);
+                    }
+                    byteTemp = _status[i];
+                    byteTemp = (byte)(byteTemp >> 3);
+                    if ((byte)(byteTemp & 0x01) == 1)
+                    {
+                        StatusErrorMessage += "Дисплей покупателя не подключен. " + Environment.NewLine;
+                        StatusErrorFlag = true;
+                        StatusErrorOccurenceEventGenerate("Дисплей покупателя не подключен. ", 11);
                     } 
                 }
                 if (i == 1)
@@ -198,7 +206,7 @@ namespace DatecsEcr.Protocol.Datecs
                     {
                         StatusErrorMessage += "Открыта крышка принтера. " + Environment.NewLine;
                         StatusErrorFlag = true;
-                        StatusErrorOccurenceEventGenerate("Открыта крышка принтера. ");
+                        StatusErrorOccurenceEventGenerate("Открыта крышка принтера. ", 41);
                     }
                     byteTemp = _status[i];
                     byteTemp = (byte)(byteTemp >> 4);
@@ -206,7 +214,7 @@ namespace DatecsEcr.Protocol.Datecs
                     {
                         StatusErrorMessage += "# Ошибка SAM. " + Environment.NewLine;
                         StatusErrorFlag = true;
-                        StatusErrorOccurenceEventGenerate("# Ошибка SAM. ");
+                        StatusErrorOccurenceEventGenerate("# Ошибка SAM. ", 42);
                     }
                     byteTemp = _status[i];
                     byteTemp = (byte)(byteTemp >> 2);
@@ -214,7 +222,7 @@ namespace DatecsEcr.Protocol.Datecs
                     {
                         StatusErrorMessage += "# Аварийное обнуление RAM. " + Environment.NewLine;
                         StatusErrorFlag = true;
-                        StatusErrorOccurenceEventGenerate("# Аварийное обнуление RAM. ");
+                        StatusErrorOccurenceEventGenerate("# Аварийное обнуление RAM. ", 43);
                     }
                     byteTemp = _status[i];
                     byteTemp = (byte)(byteTemp >> 1);
@@ -233,7 +241,7 @@ namespace DatecsEcr.Protocol.Datecs
                     {
                         StatusErrorMessage += "КЛЕФ заполнена(блокировка). " + Environment.NewLine;
                         StatusErrorFlag = true;
-                        StatusErrorOccurenceEventGenerate("КЛЕФ заполнена(блокировка). ");
+                        StatusErrorOccurenceEventGenerate("КЛЕФ заполнена(блокировка). ", 44);
                     }
                     byteTemp = _status[i];
                     if ((byte)(byteTemp & 0x01) == 1)
@@ -259,7 +267,7 @@ namespace DatecsEcr.Protocol.Datecs
                     {
                         StatusErrorMessage += "* Заполнение фискальной памяти. " + Environment.NewLine;
                         StatusErrorFlag = true;
-                        StatusErrorOccurenceEventGenerate("* Заполнение фискальной памяти. ");
+                        StatusErrorOccurenceEventGenerate("* Заполнение фискальной памяти. ", 45);
                     }
                     byteTemp = _status[i];
                     byteTemp = (byte)(byteTemp >> 1);
@@ -267,14 +275,14 @@ namespace DatecsEcr.Protocol.Datecs
                     {
                         StatusErrorMessage += "Неработоспособная ФП. " + Environment.NewLine;
                         StatusErrorFlag = true;
-                        StatusErrorOccurenceEventGenerate("Неработоспособная ФП. ");
+                        StatusErrorOccurenceEventGenerate("Неработоспособная ФП. ", 46);
                     }
                     byteTemp = _status[i];
                     if ((byte)(byteTemp & 0x01) == 1)
                     {
                         StatusErrorMessage += "* Ошибки в ФП. " + Environment.NewLine;
                         StatusErrorFlag = true;
-                        StatusErrorOccurenceEventGenerate("* Ошибки в ФП. ");
+                        StatusErrorOccurenceEventGenerate("* Ошибки в ФП. ", 47);
                     }
                 }
                 if (i == 5)
@@ -285,14 +293,14 @@ namespace DatecsEcr.Protocol.Datecs
                     {
                         StatusErrorMessage += "Последняя запись в ФП неудачна. " + Environment.NewLine;
                         StatusErrorFlag = true;
-                        StatusErrorOccurenceEventGenerate("Последняя запись в ФП неудачна. ");
+                        StatusErrorOccurenceEventGenerate("Последняя запись в ФП неудачна. ", 48);
                     }
                     byteTemp = _status[i];
                     if ((byte)(byteTemp & 0x01) == 1)
                     {
                         StatusErrorMessage += "* ФП в режиме READONLY. " + Environment.NewLine;
                         StatusErrorFlag = true;
-                        StatusErrorOccurenceEventGenerate("* ФП в режиме READONLY. ");
+                        StatusErrorOccurenceEventGenerate("* ФП в режиме READONLY. ", 49);
                     }
                 }
             }
@@ -308,7 +316,7 @@ namespace DatecsEcr.Protocol.Datecs
                 DataUpdateEventGenerate();
                 return true;
             }
-            StatusErrorOccurenceEventGenerate("Error");
+            StatusErrorOccurenceEventGenerate("Error port read or write");
             return false;
         }
 
