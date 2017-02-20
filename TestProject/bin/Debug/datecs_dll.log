@@ -106,3 +106,167 @@
 19.02.2017 22:53:19 === GetHeader(int line) - 1 - 000000
 19.02.2017 22:54:07 === Port COM1 is opened
 19.02.2017 22:54:12 === GetHeader(int line) - 1 - 000000
+19.02.2017 23:00:11 === Port COM1 is opened
+19.02.2017 23:00:15 === Command: 90. Data: 
+19.02.2017 23:00:15 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+19.02.2017 23:01:56 === Command: 62. Data: 
+19.02.2017 23:01:56 === GetDateTime()27-02-17 22:50:26
+20.02.2017 18:02:41 === Port COM1 is opened
+20.02.2017 18:02:48 === Command: 43. Data: I0
+20.02.2017 18:02:48 === GetHeader(int line) - 0 - H E A D E R,  L I N E  1
+20.02.2017 18:03:56 === Port COM1 is opened
+20.02.2017 18:03:58 === Command: 43. Data: I0
+20.02.2017 18:03:58 === GetHeader(int line) - 0 -   L I N E  1
+20.02.2017 18:04:30 === Port is closed
+20.02.2017 18:04:42 === Port COM1 is opened
+20.02.2017 18:04:43 === Command: 90. Data: 
+20.02.2017 18:04:43 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 18:04:56 === Port is closed
+20.02.2017 18:05:36 === Port COM1 is opened
+20.02.2017 18:05:38 === Command: 90. Data: 
+20.02.2017 18:05:38 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 18:05:58 === Port COM1 is opened
+20.02.2017 18:05:59 === Command: 43. Data: I0
+20.02.2017 18:05:59 === GetHeader(int line) - 0 -   L I N E  1
+20.02.2017 18:06:06 === Port is closed
+20.02.2017 18:06:26 === Port COM1 is opened
+20.02.2017 18:06:28 === Command: 43. Data: I0
+20.02.2017 18:06:28 === GetHeader(int line) - 0 - 
+20.02.2017 18:08:00 === Port COM1 is opened
+20.02.2017 18:08:01 === Command: 43. Data: I0
+20.02.2017 18:08:01 === GetHeader(int line) - 0 - 
+20.02.2017 18:08:07 === Port is closed
+20.02.2017 18:08:22 === Port COM1 is opened
+20.02.2017 18:08:22 === Command: 43. Data: I0
+20.02.2017 18:08:22 === GetHeader(int line) - 0 - 
+20.02.2017 18:08:22 === Port is closed
+20.02.2017 18:08:31 === Port COM1 is opened
+20.02.2017 18:08:32 === Command: 90. Data: 
+20.02.2017 18:08:32 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 18:08:55 === Port COM1 is opened
+20.02.2017 18:09:04 === Port COM1 is opened
+20.02.2017 18:09:06 === Command: 90. Data: 
+20.02.2017 18:09:06 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 18:09:27 === Port COM1 is opened
+20.02.2017 18:09:28 === Command: 43. Data: I0
+20.02.2017 18:09:28 === GetHeader(int line) - 0 - H E A D E R
+20.02.2017 18:29:26 === Port COM1 is opened
+20.02.2017 18:29:31 === Command: 43. Data: I0
+20.02.2017 18:29:31 === GetHeader(int line) - 0 - H E A D E R,  L I N E  1
+20.02.2017 18:29:49 === Port COM1 is opened
+20.02.2017 18:29:54 === Command: 90. Data: 
+20.02.2017 18:29:54 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 18:44:34 === Port COM1 is opened
+20.02.2017 18:44:35 === Command: 107. Data: F
+20.02.2017 18:44:35 === GetFirstArticle()
+20.02.2017 18:45:17 === Port COM1 is opened
+20.02.2017 18:45:18 === Command: 107. Data: R1
+20.02.2017 18:45:18 === GetArticle(int artNum) 1
+20.02.2017 18:47:20 === Port COM1 is opened
+20.02.2017 18:47:21 === Command: 107. Data: R1
+20.02.2017 18:47:21 === GetArticle(int artNum) 1
+20.02.2017 18:47:41 === Port COM1 is opened
+20.02.2017 18:47:42 === Command: 107. Data: F
+20.02.2017 18:47:42 === GetFirstArticle()
+20.02.2017 18:49:26 === Port COM1 is opened
+20.02.2017 18:49:27 === Command: 107. Data: F
+20.02.2017 18:49:27 === GetFirstArticle()
+20.02.2017 18:57:03 === Port is closed
+20.02.2017 18:57:23 === Port COM1 is opened
+20.02.2017 18:57:24 === Command: 107. Data: X
+20.02.2017 18:57:24 === GetFirstFreeArticle()
+20.02.2017 18:57:45 === Port COM1 is opened
+20.02.2017 18:57:46 === Command: 107. Data: x
+20.02.2017 18:57:46 === GetLastFreeArticle()
+20.02.2017 18:59:37 === Port COM1 is opened
+20.02.2017 18:59:38 === Command: 62. Data: 
+20.02.2017 18:59:38 === GetDateTime()28-02-17 18:48:09
+20.02.2017 19:00:05 === Port COM1 is opened
+20.02.2017 19:00:06 === Command: 64. Data: 0
+20.02.2017 19:00:06 === LastFiscalClosure(int param). Param - 0
+20.02.2017 19:00:45 === Port COM1 is opened
+20.02.2017 19:00:46 === Command: 64. Data: 0
+20.02.2017 19:00:46 === LastFiscalClosure(int param). Param - 0
+20.02.2017 19:00:51 === Command: 90. Data: 
+20.02.2017 19:00:51 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:01:06 === Port COM1 is opened
+20.02.2017 19:01:07 === Command: 90. Data: 
+20.02.2017 19:01:07 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:01:09 === Command: 64. Data: 0
+20.02.2017 19:01:09 === LastFiscalClosure(int param). Param - 0
+20.02.2017 19:03:46 === Port COM1 is opened
+20.02.2017 19:03:47 === Command: 90. Data: 
+20.02.2017 19:03:47 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:03:50 === Command: 64. Data: 0
+20.02.2017 19:03:50 === LastFiscalClosure(int param). Param - 0
+20.02.2017 19:06:58 === Port COM1 is opened
+20.02.2017 19:06:58 === Command: 90. Data: 
+20.02.2017 19:06:58 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:06:59 === Command: 64. Data: 0
+20.02.2017 19:06:59 === LastFiscalClosure(int param). Param - 0
+20.02.2017 19:07:11 === Port is closed
+20.02.2017 19:08:40 === Port COM1 is opened
+20.02.2017 19:08:41 === Command: 90. Data: 
+20.02.2017 19:08:41 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:08:41 === Command: 97. Data: 
+20.02.2017 19:08:41 === GetCurrentTaxRates()
+20.02.2017 19:08:58 === Port COM1 is opened
+20.02.2017 19:08:59 === Command: 90. Data: 
+20.02.2017 19:08:59 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:08:59 === Command: 99. Data: 
+20.02.2017 19:08:59 === GetTaxNumber()
+20.02.2017 19:09:29 === Port COM1 is opened
+20.02.2017 19:09:30 === Command: 90. Data: 
+20.02.2017 19:09:30 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:09:30 === Command: 64. Data: 0
+20.02.2017 19:09:30 === GetLastClosureDate()
+20.02.2017 19:11:25 === Port is closed
+20.02.2017 19:22:09 === Port COM1 is opened
+20.02.2017 19:22:10 === Command: 90. Data: 
+20.02.2017 19:22:10 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:22:17 === Command: 64. Data: 0
+20.02.2017 19:22:17 === GetLastClosureDate()
+20.02.2017 19:23:51 === Port COM1 is opened
+20.02.2017 19:23:51 === Command: 90. Data: 
+20.02.2017 19:23:51 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:33:33 === Port COM1 is opened
+20.02.2017 19:33:34 === Command: 90. Data: 
+20.02.2017 19:33:34 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:33:35 === Command: 107. Data: R1
+20.02.2017 19:33:35 === GetArticle(int artNum) 1
+20.02.2017 19:34:37 === Port COM1 is opened
+20.02.2017 19:34:37 === Command: 90. Data: 
+20.02.2017 19:34:37 === GetDiagnosticInfo(bool calcCrc). Crc calculate ? -False
+20.02.2017 19:34:38 === Command: 107. Data: R1
+20.02.2017 19:34:38 === GetArticle(int artNum) 1
+20.02.2017 19:35:18 === Port COM1 is opened
+20.02.2017 19:35:19 === Command: 107. Data: I
+20.02.2017 19:35:19 === GetArticlesInfo() 
+20.02.2017 19:35:21 === Command: 107. Data: R1
+20.02.2017 19:35:21 === GetArticle(int artNum) 1
+20.02.2017 19:37:14 === Port COM1 is opened
+20.02.2017 19:37:15 === Command: 107. Data: I
+20.02.2017 19:37:15 === GetArticlesInfo() 
+20.02.2017 19:37:16 === Command: 107. Data: X
+20.02.2017 19:37:16 === GetFirstFreeArticle()
+20.02.2017 19:37:20 === Command: 107. Data: x
+20.02.2017 19:37:20 === GetLastFreeArticle()
+20.02.2017 19:54:27 === Port COM1 is opened
+20.02.2017 19:54:27 === Command: 107. Data: I
+20.02.2017 19:54:27 === GetArticlesInfo() 
+20.02.2017 19:54:31 === Command: 107. Data: X
+20.02.2017 19:54:31 === GetFirstFreeArticle()
+20.02.2017 19:54:33 === Command: 107. Data: x
+20.02.2017 19:54:33 === GetLastFreeArticle()
+20.02.2017 19:54:35 === Command: 122. Data: 
+20.02.2017 19:54:35 === GetLastDPAExchangeTime()
+20.02.2017 19:59:56 === Port COM1 is opened
+20.02.2017 19:59:56 === Command: 107. Data: I
+20.02.2017 19:59:56 === GetArticlesInfo() 
+20.02.2017 19:59:56 === Command: 107. Data: X
+20.02.2017 19:59:56 === GetFirstFreeArticle()
+20.02.2017 19:59:56 === Command: 107. Data: x
+20.02.2017 19:59:56 === GetLastFreeArticle()
+20.02.2017 19:59:56 === Command: 122. Data: 
+20.02.2017 19:59:56 === GetLastDPAExchangeTime()
+20.02.2017 19:59:56 === Port is closed

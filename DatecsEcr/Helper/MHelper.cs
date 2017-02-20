@@ -124,6 +124,13 @@ namespace DatecsEcr.Helper
             return Encoding.Default.GetBytes(str);
         }
 
+        public static List<string> GetStringListFromByteArray(byte[] dataToHost)
+        {
+            string[] tempStringArray = MHelper.SplitBySeparator(dataToHost);
+
+            return new List<string>(tempStringArray);
+        }
+
         public static string BitConverterToString(byte[] array)
         {
             return BitConverter.ToString(array);

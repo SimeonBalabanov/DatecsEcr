@@ -329,13 +329,8 @@ namespace DatecsEcr.Protocol.Datecs
             RefreshData();
             if (DataUpdated != null)
             {
-                DataUpdated(this, new DataUpdatedEventArgs(CommandToPrinter, DataToHost, DataToPrinter, Status, GetStringArrayFromDataPrinter(DataToHost)));
+                DataUpdated(this, new DataUpdatedEventArgs(CommandToPrinter, DataToHost, DataToPrinter, Status));
             }
-        }
-
-        private string[] GetStringArrayFromDataPrinter(byte[] dataToHost)
-        {
-            return MHelper.SplitBySeparator(dataToHost);
         }
 
         private static byte[] CsCount(byte[] array)

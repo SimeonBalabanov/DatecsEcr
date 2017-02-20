@@ -27,8 +27,12 @@ namespace TestProject
 
             FiscalPrinter ecr = new FiscalPrinter();
             ecr.OpenPort(1, 115200);
-            ecr.GetHeader(2);
-            ecr.GetDateTime();
+            
+            ecr.GetArticlesInfo();
+            ecr.GetFirstFreeArticle();
+            ecr.GetLastFreeArticle();
+            ecr.GetLastDPAExchangeTime();
+            //ecr.GetDateTime();
             Console.WriteLine(ecr.s1);
             //  ecr.PrintDiagnosticInfo();
             ecr.ClosePort();
