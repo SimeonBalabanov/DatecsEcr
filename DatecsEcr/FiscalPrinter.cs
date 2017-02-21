@@ -574,14 +574,14 @@ namespace DatecsEcr
 
         public void AbsDiscGrp(int group, double disc)
         {
-            _datecsPort.SendCommand(Commands.GroupTaxDiscount, "G" + group, "11" + ";" + disc);
+            _datecsPort.SendCommand(Commands.GroupTaxDiscount, "G" + group, "11" + ";" + -(disc));
             ClassPropertiesValueUpdate();
-            MHelper.WriteLog("AbsDiscGrp(int group, double disc). By group - " + group + ". Value - " + disc);
+            MHelper.WriteLog("AbsDiscGrp(int group, double disc). By group - " + group + ". Value - " + -(disc));
         }
 
         public void PerDiscGrp(int group, double disc)
         {
-            _datecsPort.SendCommand(Commands.GroupTaxDiscount, "G" + group, "11", disc.ToString());
+            _datecsPort.SendCommand(Commands.GroupTaxDiscount, "G" + group, "11", (-disc).ToString());
             ClassPropertiesValueUpdate();
             MHelper.WriteLog("PercDiscGrp(int group, double disc). By group - " + group + ". Value - " + disc);
         }
@@ -589,7 +589,7 @@ namespace DatecsEcr
         public void AbsDiscTax(int taxGrp, double disc)
         {
             char taxName = MHelper.GetTaxNameFromNumber(taxGrp);
-            _datecsPort.SendCommand(Commands.GroupTaxDiscount, "T" + taxName, "11" + ";" + disc);
+            _datecsPort.SendCommand(Commands.GroupTaxDiscount, "T" + taxName, "11" + ";" + -(disc));
             ClassPropertiesValueUpdate();
             MHelper.WriteLog("AbsDiscTax(int group, double disc). By tax group - " + taxName + ". Value - " + disc);
         }
@@ -597,7 +597,7 @@ namespace DatecsEcr
         public void PerDiscTax(int taxGrp, double disc)
         {
             char taxName = MHelper.GetTaxNameFromNumber(taxGrp);
-            _datecsPort.SendCommand(Commands.GroupTaxDiscount, "T" + taxName, "11", disc.ToString());
+            _datecsPort.SendCommand(Commands.GroupTaxDiscount, "T" + taxName, "11", (-disc).ToString());
             ClassPropertiesValueUpdate();
             MHelper.WriteLog("PerDiscTax(int group, double disc). By tax group - " + taxName + ". Value - " + disc);
         }

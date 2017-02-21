@@ -71,7 +71,7 @@ namespace DatecsEcr
         void AbsDiscGrp(int group, double disc);
         void PerDiscGrp(int group, double disc);
         void AbsDiscTax(int taxGroup, double disc);
-        void PerDiscTax(int grup, double disc);
+        void PerDiscTax(int group, double disc);
 
 
         //reports
