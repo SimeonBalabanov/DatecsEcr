@@ -24,6 +24,8 @@ namespace DatecsEcr
         public string s8;
         public string s9;
         public string s10;
+        public string s11;
+        public string s12;
         public short LastError;
         public string LastErrorText;
         private IProtocol _datecsPort;
