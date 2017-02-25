@@ -26,7 +26,7 @@ namespace DatecsEcr
         public string s10;
         public string s11;
         public string s12;
-        public short LastError;
+        public int LastError;
         public string LastErrorText;
         private IProtocol _datecsPort;
 
@@ -42,6 +42,8 @@ namespace DatecsEcr
             s8 = string.Empty;
             s9 = string.Empty;
             s10 = string.Empty;
+            s11 = string.Empty;
+            s12 = string.Empty;
             LastError = 0;
             LastErrorText = string.Empty;
         }
@@ -49,16 +51,12 @@ namespace DatecsEcr
         public void OpenPort(int portNum, int baudRate)
         {
             _datecsPort = Datecs.GetDatecsPrinterPort(portNum, baudRate);
+            _datecsPort.EventHandlersAddRemove(null, ErrorPropertiesSet, ErrorPropertiesSet);
             if (_datecsPort.PortOpen())
             {
                 MHelper.WriteLog("Port COM" + portNum + " is opened");
                 _datecsPort.EventHandlersAddRemove(MHelper.AfterDataUpdateHandler,
                     MHelper.ErrorHandler, MHelper.AfterStatusUpdateHandler);
-            }
-            else
-            {
-                ErrorPropertiesSet(1, "Невозможно открыть СОМ порт");
-                MHelper.WriteLog("Error open port COM" + portNum, LogType.Error);
             }
         }
 
@@ -908,10 +906,10 @@ namespace DatecsEcr
             MHelper.WriteLog("GetLastDPAExchangeTime()");
         }
 
-        private void ErrorPropertiesSet(short errNum, string errText)
+        private void ErrorPropertiesSet(object sender, ErrorMessagesEventArgs e)
         {
-            LastError = errNum;
-            LastErrorText = errText;
+            LastError = e.ErrorCode;
+            LastErrorText = e.ErrorMessages;
         }
 
         public static void MessageBoxShow(string mes)
@@ -941,5 +939,6 @@ namespace DatecsEcr
                 }
             }
         }
+
     }
 }

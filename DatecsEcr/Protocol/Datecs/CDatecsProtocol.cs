@@ -316,7 +316,7 @@ namespace DatecsEcr.Protocol.Datecs
                 DataUpdateEventGenerate();
                 return true;
             }
-            StatusErrorOccurenceEventGenerate("Error port read or write");
+            //StatusErrorOccurenceEventGenerate("Ошибка чтения порта", 1);
             return false;
         }
 
@@ -324,7 +324,7 @@ namespace DatecsEcr.Protocol.Datecs
         {
             if (StatusErrorOccured != null && _port == null)
             {
-                StatusErrorOccured(this, new ErrorMessagesEventArgs("Порт не существует."));
+                StatusErrorOccured(this, new ErrorMessagesEventArgs("Порт не существует.", 1));
             }
             if (StatusErrorOccured != null)
             {

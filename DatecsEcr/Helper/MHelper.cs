@@ -291,7 +291,7 @@ namespace DatecsEcr.Helper
 
         public static void ErrorHandler(object sender, ErrorMessagesEventArgs e)
         {
-            WriteLog(e.ErrorMessages, LogType.Error);
+            WriteLog(e.ErrorMessages + " " + e.ErrorCode, LogType.Error);
         }
 
         public static void AfterDataUpdateHandler(object sender, DataUpdatedEventArgs e)
@@ -302,7 +302,7 @@ namespace DatecsEcr.Helper
 
         public static void AfterStatusUpdateHandler(object sender, ErrorMessagesEventArgs e)
         {
-            WriteLog(e.ErrorMessages, LogType.Error);
+            WriteLog(e.ErrorMessages + " " + e.ErrorCode, LogType.Error);
         }
 
         public static char GetTaxNameFromNumber(int taxGrp)

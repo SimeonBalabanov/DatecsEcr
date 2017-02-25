@@ -60,27 +60,27 @@ namespace DatecsEcr.FiscalLowLevel.Datecs
             }
             catch (UnauthorizedAccessException ex)
             {
-                ErrorOccurenceEventGenerated(ex.Message);
+                ErrorOccurenceEventGenerated(ex.Message, 1);
                 return false;
             }
             catch (InvalidOperationException ex)
             {
-                ErrorOccurenceEventGenerated(ex.Message);
+                ErrorOccurenceEventGenerated(ex.Message, 1);
                 return false;
             }
             catch (ArgumentOutOfRangeException ex)
             {
-                ErrorOccurenceEventGenerated(ex.Message);
+                ErrorOccurenceEventGenerated(ex.Message, 1);
                 return false;
             }
             catch (ArgumentException ex)
             {
-                ErrorOccurenceEventGenerated(ex.Message);
+                ErrorOccurenceEventGenerated(ex.Message, 1);
                 return false;
             }
             catch (IOException ex)
             {
-                ErrorOccurenceEventGenerated(ex.Message);
+                ErrorOccurenceEventGenerated(ex.Message, 1);
                 return false;
             }
             return true;
@@ -120,12 +120,12 @@ namespace DatecsEcr.FiscalLowLevel.Datecs
             }
             catch (InvalidOperationException ex)
             {
-                ErrorOccurenceEventGenerated(ex.Message);
+                ErrorOccurenceEventGenerated(ex.Message, 1);
                 return false;
             }
             catch (ArgumentNullException ex)
             {
-                ErrorOccurenceEventGenerated(ex.Message);
+                ErrorOccurenceEventGenerated(ex.Message, 1);
                 return false;
             }
             return true;
@@ -188,22 +188,22 @@ namespace DatecsEcr.FiscalLowLevel.Datecs
                 }
                 catch (InvalidOperationException ex)
                 {
-                    ErrorOccurenceEventGenerated(ex.Message);
+                    ErrorOccurenceEventGenerated(ex.Message, 1);
                     return false;
                 }
                 catch (GetSynException ex)
                 {
-                    ErrorOccurenceEventGenerated(ex.MessageSynException);
+                    ErrorOccurenceEventGenerated(ex.MessageSynException, 1);
                     return false;
                 }
                 catch (GetNakException ex)
                 {
-                    ErrorOccurenceEventGenerated(ex.MessageGetNakException);
+                    ErrorOccurenceEventGenerated(ex.MessageGetNakException, 1);
                     return false;
                 }
                 catch (AnswerPackageLenException ex)
                 {
-                    ErrorOccurenceEventGenerated(ex.MessageAnswerPackageLenException);
+                    ErrorOccurenceEventGenerated(ex.MessageAnswerPackageLenException, 1);
                     return false;
                 }
                 return true;
@@ -231,7 +231,7 @@ namespace DatecsEcr.FiscalLowLevel.Datecs
             ErrorMessage = error;
             if (ErrorOccurrence != null)
             {
-                ErrorOccurrence(this, new ErrorMessagesEventArgs(error));
+                ErrorOccurrence(this, new ErrorMessagesEventArgs(error, errNum != 0 ? errNum : 999));
             }
         }
 

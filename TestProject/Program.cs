@@ -27,11 +27,8 @@ namespace TestProject
 
             FiscalPrinter ecr = new FiscalPrinter();
             ecr.OpenPort(1, 115200);
-            
-            ecr.OpenFiscalReceipt(1, "0000", 1);
-            ecr.RegistrItem(10, 1.00, 0.00, 0.00);
-            ecr.AbsDiscTax(6, 3.00);
-            ecr.TotalEx("", 1, 100);
+
+            ecr.PrintDiagnosticInfo();
             //ecr.GetDateTime();
             Console.WriteLine(ecr.s1);
             //  ecr.PrintDiagnosticInfo();
