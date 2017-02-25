@@ -50,8 +50,16 @@ namespace DatecsEcr
 
         public void OpenPort(int portNum, int baudRate)
         {
-            _datecsPort = Datecs.GetDatecsPrinterPort(portNum, baudRate);
-            _datecsPort.EventHandlersAddRemove(null, ErrorPropertiesSet, ErrorPropertiesSet);
+            if (baudRate == 9600 || baudRate == 19200 || baudRate == 57600 || baudRate == 115200)
+            {
+                _datecsPort = Datecs.GetDatecsPrinterPort(portNum, baudRate);
+            }
+            else
+            {
+                MHelper.WriteLog("Неверная скорость СОМ порта,  будет установлена 115200 бод", LogType.Error);
+                _datecsPort = Datecs.GetDatecsPrinterPort(portNum, 115200);
+            }
+            _datecsPort.EventHandlersAddRemove(ClassPropertiesValueUpdate, ErrorPropertiesEventHandler, ErrorPropertiesEventHandler);
             if (_datecsPort.PortOpen())
             {
                 MHelper.WriteLog("Port COM" + portNum + " is opened");
@@ -70,7 +78,7 @@ namespace DatecsEcr
         public void SaveSettings()
         {
             _datecsPort.SendCommand(Commands.SaveSettingsToFlash);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SaveSettings()");
         }
 
@@ -86,7 +94,7 @@ namespace DatecsEcr
                 _datecsPort.SendCommand(Commands.PrintSettings, "B240");
                 MHelper.WriteLog("SetBarcodeHeight(int value) incorrect value. Set = 240", LogType.Error);
             }
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
         }
 
         public void SetPrintDensity(int value)
@@ -101,13 +109,13 @@ namespace DatecsEcr
                 _datecsPort.SendCommand(Commands.PrintSettings, "D3");
                 MHelper.WriteLog("SetPrintDensity(int value) incorrect value. Set = 3 ", LogType.Error);
             }
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
         }
 
         public void EnableAutoOpenDrawer(bool enabled)
         {
             _datecsPort.SendCommand(Commands.PrintSettings, enabled ? "X0" : "X1");
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("EnableAutoOpenDrawer(bool enabled)  = " + enabled);
         }
 
@@ -130,14 +138,14 @@ namespace DatecsEcr
                     break;
             }
             _datecsPort.SendCommand(Commands.AdditionalPaymentType, paymentType, name);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetTaxName(int tax, string name). Payment type = " + tax + ". Payment name = " + name);
         }
 
         public void SetHeaderFooter(int line, string text)
         {
             _datecsPort.SendCommand(Commands.PrintSettings, line - 1 + text);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetHeaderFooter(int line, string text) " + (line - 1) + " set");
         }
 
@@ -151,35 +159,68 @@ namespace DatecsEcr
         public void EnableCutCheck(bool enabled)
         {
             _datecsPort.SendCommand(Commands.PrintSettings, enabled ? "C1" : "C0");
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("EnableCutCheck(bool enabled) is - " + enabled);
         }
 
         public void EnableSmallFont(bool enabled)
         {
             _datecsPort.SendCommand(Commands.PrintSettings, enabled ? "F1" : "F0");
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("EnableSmallFont(bool enabled) is - " + enabled);
         }
 
         public void EnableLogo(bool enabled)
         {
             _datecsPort.SendCommand(Commands.PrintSettings, enabled ? "L0" : "L1");
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("EnableLogo(bool enable) is " + enabled);
         }
 
         public void SetDateTime(string date, string time)
         {
             _datecsPort.SendCommand(Commands.SetDateTime, date + " " + time);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetDateTime(string date, string time) " + date + " " + time);
         }
 
         public void Fiscalise(string passwd, string serial, string taxnum, int taxNumType)
         {
             _datecsPort.SendCommand(Commands.FiscalizationPersonalization, passwd, serial, taxnum, taxNumType.ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
+            switch (MHelper.GetStringFromByteArray(_datecsPort.DataToHost))
+            {
+                case "1":
+                    ErrorPropertiesUpdate("Ошибка фискализации. Команда выполнена 10 раз", 13);
+                    break;
+                case "2":
+                    ErrorPropertiesUpdate("Ошибка фискализации. Не задан фискальный номер", 14);
+                    break;
+                case "3":
+                    ErrorPropertiesUpdate("Ошибка фискализации. Не правильный заводской номер или данные рефискализации", 15);
+                    break;
+                case "4":
+                    ErrorPropertiesUpdate("Ошибка фискализации. Открыт фискальный или не фискальный чек", 16);
+                    break;
+                case "5":
+                    ErrorPropertiesUpdate("Ошибка фискализации. В текущей смене осуществлялись продажи. Сделайте Z-отчет", 17);
+                    break;
+                case "6":
+                    ErrorPropertiesUpdate("Ошибка фискализации. Не заданы налоговый ставки", 18);
+                    break;
+                case "7":
+                    ErrorPropertiesUpdate("Ошибка фискализации. Налоговый номер состоит из нулей или имеет не правильную длину", 19);
+                    break;
+                case "8":
+                    ErrorPropertiesUpdate("Ошибка фискализации. Отсутствует лента", 20);
+                    break;
+                case "9":
+                    ErrorPropertiesUpdate("Ошибка фискализации. Не установлены дата/время", 21);
+                    break;
+                default:
+                    ErrorPropertiesUpdate(string.Empty, 0);
+                    break;
+            }
             MHelper.WriteLog("Fiscalise(string passwd, string serial, string taxnum, int taxNumType)." + serial + " " +
                              taxnum + " " + taxNumType);
         }
@@ -188,7 +229,7 @@ namespace DatecsEcr
         {
             _datecsPort.SendCommand(Commands.TaxSet, passwd, dec.ToString(), enableTax, taxA.ToString(), taxB.ToString(),
                 taxC.ToString(), taxD.ToString());
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("SetMulDecCurRF(string " + passwd + "," + "int " + dec + ",string" + enableTax + ", double" +
                              taxA + ", double" + taxB + ", double" + taxC + ", double" + taxD);
         }
@@ -200,28 +241,28 @@ namespace DatecsEcr
         public void SetSerialNumber(string serial)
         {
             _datecsPort.SendCommand(Commands.SerialNumberSet, "2", serial);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetSerialNumber(string serial) is " + serial);
         }
 
         public void SetFiscalNumber(string fNumber)
         {
             _datecsPort.SendCommand(Commands.FiscalNumberSet, fNumber);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetFiscalNumber(string fNumber) is " + fNumber);
         }
 
         public void SetTaxNumber(string taxNum, int type)
         {
             _datecsPort.SendCommand(Commands.PersonalNumberSet, taxNum, type.ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetTaxNumber(string taxNum, int type) is " + taxNum);
         }
 
         public void SetOperatorPassword(int opNum, string oldPasswd, string newPasswd)
         {
             _datecsPort.SendCommand(Commands.OperatorPasswdSet, opNum.ToString(), oldPasswd, newPasswd);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetOperatorPassword(int opNum, string oldPasswd, string newPasswd). " + opNum + " " +
                              oldPasswd + " " + newPasswd);
         }
@@ -229,7 +270,7 @@ namespace DatecsEcr
         public void SetOperatorName(int opNum, string passwd, string name)
         {
             _datecsPort.SendCommand(Commands.OperatorNameSet, opNum.ToString(), passwd, name);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetOperatorName(int opNum, string passwd, string name). " + opNum + " " +
                              passwd + " " + name);
         }
@@ -237,28 +278,28 @@ namespace DatecsEcr
         public void ClearOperator(int opNum, string passwd)
         {
             _datecsPort.SendCommand(Commands.PersonalNumberSet, opNum.ToString(), passwd);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("ClearOperator(int opNum, string passwd) " + opNum);
         }
 
         public void SetAdminPassword(string oldPass, string newPass)
         {
             _datecsPort.SendCommand(Commands.AdminPasswdSet, oldPass, newPass);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetAdminPassword(string oldPass, string newPass). " + oldPass + " " + newPass);
         }
 
         public void ClearOperatorPassword(int opNum, string admPasswd)
         {
             _datecsPort.SendCommand(Commands.AdminPasswdSet, opNum.ToString(), admPasswd);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("ClearOperatorPassword(int opNum, string admPasswd). " + opNum);
         }
 
         public void GetArticlesInfo()
         {
             _datecsPort.SendCommand(Commands.ProgramArticles, "I");
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetArticlesInfo() ");
         }
 
@@ -266,14 +307,14 @@ namespace DatecsEcr
         {
             char taxName = MHelper.GetTaxNameFromNumber(taxGrp);
             _datecsPort.SendCommand(Commands.ProgramArticles, "P" + taxName + artNum,  grp.ToString(), price.ToString(), passwd, name);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SetArticle(int artNum, int taxGrp, int grp, double price, string passwd, string name)");
         }
 
         public void DelArticle(string passwd, int artNum)
         {
             _datecsPort.SendCommand(Commands.ProgramArticles, "D" + (artNum == 0 ? "A," + passwd : artNum + "," + passwd));
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("DelArticle(string passwd, int artNum) " + artNum);
         }
 
@@ -286,7 +327,7 @@ namespace DatecsEcr
                 tmpList[0] = tmpList[0].Replace("P", "");
                 tmpList.Insert(0, "P");
             }
-            ClassPropertiesValueUpdate(tmpList);
+            //ClassPropertiesvalueupdate(tmpList);
             MHelper.WriteLog("GetArticle(int artNum) " + artNum);
         }
 
@@ -299,7 +340,7 @@ namespace DatecsEcr
                 tmpList[0] = tmpList[0].Replace("P", "");
                 tmpList.Insert(0, "P");
             }
-            ClassPropertiesValueUpdate(tmpList);
+            //ClassPropertiesvalueupdate(tmpList);
             MHelper.WriteLog("GetFirstArticle()");
         }
 
@@ -312,14 +353,14 @@ namespace DatecsEcr
                 tmpList[0] = tmpList[0].Replace("P", "");
                 tmpList.Insert(0, "P");
             }
-            ClassPropertiesValueUpdate(tmpList);
+            //ClassPropertiesvalueupdate(tmpList);
             MHelper.WriteLog("GetNextArticle()");
         }
 
         public void ChangeArticlePrice(string passwd, int artNum, double price)
         {
             _datecsPort.SendCommand(Commands.ProgramArticles, "C" + artNum, price.ToString(), passwd);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("ChangeArticlePrice(string passwd, int artNum, double price) is " + artNum + " . Price is " + price);
         }
 
@@ -332,7 +373,7 @@ namespace DatecsEcr
                 tmpList[0] = tmpList[0].Replace("P", "");
                 tmpList.Insert(0, "P");
             }
-            ClassPropertiesValueUpdate(tmpList);
+            //ClassPropertiesvalueupdate(tmpList);
             MHelper.WriteLog("GetFirstFreeArticle()");
         }
 
@@ -345,35 +386,57 @@ namespace DatecsEcr
                 tmpList[0] = tmpList[0].Replace("P", "");
                 tmpList.Insert(0, "P");
             }
-            ClassPropertiesValueUpdate(tmpList);
+            //ClassPropertiesvalueupdate(tmpList);
             MHelper.WriteLog("GetLastFreeArticle()");
         }
 
         public void OpenNonfiscalReceipt()
         {
             _datecsPort.SendCommand(Commands.OpenNonFiscalReceipt);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            List<string> dataList = MHelper.GetStringListFromByteArray(_datecsPort.DataToHost);
+            if (dataList.Count > 1)
+            {
+                //ClassPropertiesvalueupdate(dataList);
+            }
+            else
+            {
+                switch (dataList[0])
+                {
+                    case "1":
+                        ErrorPropertiesUpdate("Ошибка открытия нефискального чека. Фискальная память не форматирована", 25);
+                        break;
+                    case "2":
+                        ErrorPropertiesUpdate("Ошибка открытия нефискального чека. Открыт фискальный чек", 26);
+                        break;
+                    case "3":
+                        ErrorPropertiesUpdate("Ошибка открытия нефискального чека. Нефискальный чек уже открыт", 27);
+                        break;
+                    case "4":
+                        ErrorPropertiesUpdate("Ошибка открытия нефискального чека. Не установлены дата/время", 28);
+                        break;
+                }
+            }
             MHelper.WriteLog("OpenNonfiscalReceipt()");
         }
 
         public void PrintNonfiscalText(string text)
         {
             _datecsPort.SendCommand(Commands.NonFiscalPrint, text);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintNonfiscalText(string text) - " + text);
         }
 
         public void CloseNonFiscalReceipt()
         {
             _datecsPort.SendCommand(Commands.CloseNonFiscalReceipt);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("CloseNnFiscalReceipt()");
         }
 
         public void OpenFiscalReceipt(int operNum, string passwd, int cashDeskNum)
         {
             _datecsPort.SendCommand(Commands.OpenFiscalReceipt, operNum.ToString(), passwd, cashDeskNum.ToString(), "I");
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("OpenFiscalReceipt(int operNum, string passwd, int cashDeskNum)");
         }
 
@@ -399,9 +462,10 @@ namespace DatecsEcr
             }
             else
             {
+                ErrorPropertiesUpdate("Не правильные параметры функции", -1);
                 MHelper.WriteLog("Error add item sum discount and abs discount not 0.00", LogType.Error);
             }
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
         }
 
         public void RegistrItemEx(int artNum, double quantity, double price, double percDisc, double sumDisc)
@@ -426,9 +490,10 @@ namespace DatecsEcr
             }
             else
             {
+                ErrorPropertiesUpdate("Не правильные параметры функции", -1);
                 MHelper.WriteLog("Error add item sum discount and abs discount not 0.00", LogType.Error);
             }
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
         }
 
         public void RegistrAndDisplayItem(int artNum, double quantity, double percDisc, double sumDisc)
@@ -453,9 +518,10 @@ namespace DatecsEcr
             }
             else
             {
+                ErrorPropertiesUpdate("Не правильные параметры функции", -1);
                 MHelper.WriteLog("Error add item sum discount and abs discount not 0.00", LogType.Error);
             }
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
         }
 
         public void RegistrAndDisplayItemEx(int artNum, double quantity, double price, double percDisc, double sumDisc)
@@ -480,15 +546,16 @@ namespace DatecsEcr
             }
             else
             {
+                ErrorPropertiesUpdate("Не правильные параметры функции", -1);
                 MHelper.WriteLog("Error add item sum discount and abs discount not 0.00", LogType.Error);
             }
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
         }
 
         public void PrintFiscalText(string text)
         {
             _datecsPort.SendCommand(Commands.FiscalTextPrint, text);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintFiscalText(string text) -  " + text);
         }
 
@@ -498,7 +565,7 @@ namespace DatecsEcr
                 return;
             _datecsPort.SendCommand(Commands.SubTotalDiscAllow,
                 "11" + (percDisc != 0 ? "," + percDisc : "") + (sumDisc != 0 ? ";" + sumDisc : ""));
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("SubTotal(double percDisc, double sumDisc). Percent - " + percDisc + ". Sum - " + sumDisc);
         }
 
@@ -507,7 +574,7 @@ namespace DatecsEcr
             char payName = MHelper.GetPayNameFromNumber(payMode);
             _datecsPort.SendCommand(Commands.SumTotal, text + '\t' + (payMode == 1 ? payName + sum : payName));
             string tmpString = MHelper.GetStringFromByteArray(_datecsPort.DataToHost).Substring(1);
-            ClassPropertiesValueUpdate(new List<string>() {_datecsPort.DataToHost[0].ToString(), tmpString});
+            //ClassPropertiesvalueupdate(new List<string>() {_datecsPort.DataToHost[0].ToString(), tmpString});
             MHelper.WriteLog("Total(string text, int payMode, double sum). Sum " + sum + ". Payment type - " + payName + ". Text - " + text);
         }
 
@@ -516,49 +583,49 @@ namespace DatecsEcr
             char payName = MHelper.GetPayNameFromNumber(payMode);
             _datecsPort.SendCommand(Commands.PaymentAndCloseRecipt, text + '\t' + (payMode == 1 ? payName + sum : payName));
             string tmpString = MHelper.GetStringFromByteArray(_datecsPort.DataToHost).Substring(1);
-            ClassPropertiesValueUpdate(new List<string>() { _datecsPort.DataToHost[0].ToString(), tmpString });
+            //ClassPropertiesvalueupdate(new List<string>() { _datecsPort.DataToHost[0].ToString(), tmpString });
             MHelper.WriteLog("TotalEx(string text, int payMode, double sum). Sum " + sum + ". Payment type - " + payName + ". Text - " + text);
         }
 
         public void PrintBarCode(int type, string text)
         {
             _datecsPort.SendCommand(Commands.BarQrCodePrint, type.ToString(), text);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintBarCode(int type, string text). Type - " + type + ". Text - " + text);
         }
 
         public void PrintLine(int type)
         {
             _datecsPort.SendCommand(Commands.DemarcationLinePrint, type.ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintLine(int type). Type - " + type);
         }
 
         public void CloseFiscalReceipt()
         {
             _datecsPort.SendCommand(Commands.CloseFiscalReceipt);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("CloseFiscalReceipt()");
         }
 
         public void CancelReceipt()
         {
             _datecsPort.SendCommand(Commands.CancelFiscalReceipt);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("CancelReceipt()");
         }
 
         public void OpenReturnReceipt(int operNum, string passwd, int cashDescNum)
         {
             _datecsPort.SendCommand(Commands.OpenReturnReceipt, operNum.ToString(), passwd, cashDescNum.ToString(), "I");
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("OpenReturnReceipt(int operNum, string passwd, int cashDeskNum)");
         }
 
         public void MakeReceiptCopy(int count)
         {
             _datecsPort.SendCommand(Commands.ReceiptCopy, (count < 0 || count > 2) ? "1" : count.ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("MakeReceiptCopy(int count) - " + count);
         }
 
@@ -568,21 +635,21 @@ namespace DatecsEcr
             PrintFiscalText("НУЛЕВОЙ ЧЕК");
             Total("", 1, 0.00);
             CloseFiscalReceipt();
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintNullCheck()");
         }
 
         public void AbsDiscGrp(int group, double disc)
         {
             _datecsPort.SendCommand(Commands.GroupTaxDiscount, "G" + group, "11" + ";" + -(disc));
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("AbsDiscGrp(int group, double disc). By group - " + group + ". Value - " + -(disc));
         }
 
         public void PerDiscGrp(int group, double disc)
         {
             _datecsPort.SendCommand(Commands.GroupTaxDiscount, "G" + group, "11", (-disc).ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PercDiscGrp(int group, double disc). By group - " + group + ". Value - " + disc);
         }
 
@@ -590,7 +657,7 @@ namespace DatecsEcr
         {
             char taxName = MHelper.GetTaxNameFromNumber(taxGrp);
             _datecsPort.SendCommand(Commands.GroupTaxDiscount, "T" + taxName, "11" + ";" + -(disc));
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("AbsDiscTax(int group, double disc). By tax group - " + taxName + ". Value - " + disc);
         }
 
@@ -598,56 +665,56 @@ namespace DatecsEcr
         {
             char taxName = MHelper.GetTaxNameFromNumber(taxGrp);
             _datecsPort.SendCommand(Commands.GroupTaxDiscount, "T" + taxName, "11", (-disc).ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PerDiscTax(int group, double disc). By tax group - " + taxName + ". Value - " + disc);
         }
 
         public void XReport(string passwd)
         {
             _datecsPort.SendCommand(Commands.DailyReport, passwd, "2");
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("XReport(string passwd)");
         }
 
         public void ZReport(string passwd)
         {
             _datecsPort.SendCommand(Commands.DailyReport, passwd, "0");
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("ZReport(string passwd)");
         }
 
         public void PrintTaxReport(string passwd, string dateFrom, string dateTo)
         {
             _datecsPort.SendCommand(Commands.TaxChangeHistory, passwd, dateFrom, dateTo);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintTaxReport(string passwd, string dateFrom, string dateTo)");
         }
 
         public void PrintRepByNumFull(string passwd, int fromNum, int toNum)
         {
             _datecsPort.SendCommand(Commands.PeriodReportByNumberLong, passwd, fromNum.ToString(), toNum.ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintRepByNumFull(string passwd, int fromNum, int toNum)");
         }
 
         public void PrintRepByDateFull(string passwd, string fromDate, string toDate)
         {
             _datecsPort.SendCommand(Commands.PeriodReportByDateLong, passwd, fromDate, toDate);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintRepByDateFull(string passwd, string fromDate, string toDate)");
         }
 
         public void PrintRepByNum(string passwd, int fromNum, int toNum)
         {
             _datecsPort.SendCommand(Commands.PeriodReportByNumberShort, passwd, fromNum.ToString(), toNum.ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintRepByNum(string passwd, int fromNum, int toNum)");
         }
 
         public void PrintRepByDate(string passwd, string fromDate, string toDate)
         {
             _datecsPort.SendCommand(Commands.PeriodReportByDateShort, passwd, fromDate, toDate);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintRepByDate(string passwd, string fromDate, string toDate)");
         }
 
@@ -667,7 +734,7 @@ namespace DatecsEcr
                     break;
             }
             _datecsPort.SendCommand(Commands.ArticlesReport, passwd, reportType);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintRepByArt(string passwd, int type)");
 
         }
@@ -675,7 +742,7 @@ namespace DatecsEcr
         public void PrintRepByOperator(string passwd)
         {
             _datecsPort.SendCommand(Commands.OperatorsReport, passwd);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintRepByOperator(string passwd)");
         }
 
@@ -690,91 +757,91 @@ namespace DatecsEcr
             _datecsPort.SendCommand(Commands.LastFiscalClosureInfo, param > 1 || param < 0 ? "0" : param.ToString());
             List<string> tmpList = MHelper.GetStringListFromByteArray(_datecsPort.DataToHost);
             tmpList[0] = tmpList[0].Substring(1);
-            ClassPropertiesValueUpdate(tmpList);
+            //ClassPropertiesvalueupdate(tmpList);
             MHelper.WriteLog("LastFiscalClosure(int param). Param - " + param);
         }
 
         public void GetCurrentSums(int param)
         {
             _datecsPort.SendCommand(Commands.DaylyTurnoverInfo, param > 3 || param < 0 ? "0" : param.ToString());
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetCurrentSums(int param). Param - " + param);
         }
 
         public void GetCorectSums()
         {
             _datecsPort.SendCommand(Commands.StornoSumInfo);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetCorectSums()");
         }
 
         public void GetFreeClosures()
         {
             _datecsPort.SendCommand(Commands.FiscalMemoryCapasity);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetFreeClosures()");
         }
 
         public void GetStatus(bool wait)
         {
             _datecsPort.SendCommand(Commands.PrinterStatus, wait ? "W" : "X");
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("GetStatus(bool wait) Wait for print buffer clean? -" + wait);
         }
 
         public void GetFiscalClosureStatus(bool current)
         {
             _datecsPort.SendCommand(Commands.FiscalTransactionStatus, current ? "T" : "");
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetFiscalClosureStatus(bool current)");
         }
 
         public void GetDiagnosticInfo(bool calcCrc)
         {
             _datecsPort.SendCommand(Commands.DiagnosticInfo, calcCrc ? "1" : "");
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetDiagnosticInfo(bool calcCrc). Crc calculate ? -" + calcCrc);
         }
 
         public void GetCurrentTaxRates()
         {
             _datecsPort.SendCommand(Commands.CurrentTax);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetCurrentTaxRates()");
         }
 
         public void GetTaxNumber()
         {
             _datecsPort.SendCommand(Commands.CurrentPersonalNumber);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetTaxNumber()");
         }
 
         public void GetReceiptInfo()
         {
             _datecsPort.SendCommand(Commands.CurrentReceiptInfo);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetReceiptInfo()");
         }
 
         public void GetDayInfo()
         {
             _datecsPort.SendCommand(Commands.AdditionalInfo);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetDayInfo()");
         }
 
         public void GetOperatorInfo(int opNum)
         {
             _datecsPort.SendCommand(Commands.OperatorsInfo, opNum > 16 || opNum < 1 ? "1" : opNum.ToString());
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetOperatorInfo(int opNum). Operator number - " + opNum);
         }
 
         public void GetLastReceiptNum()
         {
             _datecsPort.SendCommand(Commands.LastDocument);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetLastReceiptNum()");
         }
 
@@ -786,7 +853,7 @@ namespace DatecsEcr
         public void GetSmenLen()
         {
             _datecsPort.SendCommand(Commands.ShiftDuration);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetSmenLen()");
         }
 
@@ -795,14 +862,14 @@ namespace DatecsEcr
             _datecsPort.SendCommand(Commands.LastFiscalClosureInfo, "0");
             List<string> tmpList = MHelper.GetStringListFromByteArray(_datecsPort.DataToHost);
             tmpList[0] = tmpList[0].Substring(1);
-            ClassPropertiesValueUpdate(tmpList);
+            //ClassPropertiesvalueupdate(tmpList);
             MHelper.WriteLog("GetLastClosureDate()");
         }
 
         public void AdvancePaper(int lines)
         {
             _datecsPort.SendCommand(Commands.PaperTransport, lines < 1 || lines > 99 ? "1" : lines.ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("AdvancePaper(int lines) - " + lines);
         }
 
@@ -813,42 +880,42 @@ namespace DatecsEcr
         public void CutReceipt()
         {
             _datecsPort.SendCommand(Commands.PaperCut);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("CutReceipt()");
         }
 
         public void ClearDisplay()
         {
             _datecsPort.SendCommand(Commands.ClearDisplay);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("ClearDisplay()");
         }
 
         public void DisplayTextLL(string text)
         {
             _datecsPort.SendCommand(Commands.DisplayText, text);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("DisplayTextLL(string text) - " + text); 
         }
 
         public void DisplayTextUL(string text)
         {
             _datecsPort.SendCommand(Commands.DisplayTextUpper, text);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("DisplayTextUL(string text) - " + text);
         }
 
         public void DisplayDateTime()
         {
             _datecsPort.SendCommand(Commands.DateTimeDisplay);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("DisplayDateTime()");
         }
 
         public void DisplayFreeText(string text)
         {
             _datecsPort.SendCommand(Commands.DisplayFreeText, text);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("DisplayFreeText(string text) - " + text); 
         }
 
@@ -860,56 +927,61 @@ namespace DatecsEcr
         public void OpenDrawer()
         {
             _datecsPort.SendCommand(Commands.CashDrawerOpen, "30");
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("OpenDrawer()");
         }
 
         public void OpenDrawerEx(int mSec)
         {
             _datecsPort.SendCommand(Commands.CashDrawerOpen, mSec < 5 || mSec > 150 ? "30" : mSec.ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("OpenDrawerEx(int mSec) - " + mSec);
         }
 
         public void InOut(double sum)
         {
             _datecsPort.SendCommand(Commands.SericeInOut, sum.ToString());
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("InOut(double sum) = " + sum);
         }
 
         public void PrintDiagnosticInfo()
         {
             _datecsPort.SendCommand(Commands.PrintDiagnostic);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("PrintDiagnosticInfo()");
         }
 
         public void Sound()
         {
             _datecsPort.SendCommand(Commands.Sound);
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("Sound()");
         }
 
         public void SoundEx(int hZ, int mSec)
         {
             _datecsPort.SendCommand(Commands.Sound, hZ < 100 || hZ > 5000 ? "2000" : hZ.ToString(), mSec < 50 || mSec > 2000 ? "300" : mSec.ToString());
-            ClassPropertiesValueUpdate();
+            //ClassPropertiesvalueupdate();
             MHelper.WriteLog("SoundEx(int hZ, int mSec). Hz - " + hZ + ". mSec - " + mSec);
         }
 
         public void GetLastDPAExchangeTime()
         {
             _datecsPort.SendCommand(Commands.ReceiveDataStatus);
-            ClassPropertiesValueUpdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
+            //ClassPropertiesvalueupdate(MHelper.GetStringListFromByteArray(_datecsPort.DataToHost));
             MHelper.WriteLog("GetLastDPAExchangeTime()");
         }
 
-        private void ErrorPropertiesSet(object sender, ErrorMessagesEventArgs e)
+        private void ErrorPropertiesEventHandler(object sender, ErrorMessagesEventArgs e)
         {
-            LastError = e.ErrorCode;
-            LastErrorText = e.ErrorMessages;
+            ErrorPropertiesUpdate(e.ErrorMessages, e.ErrorCode);
+        }
+
+        private void ErrorPropertiesUpdate(string errorMes, int errorCode)
+        {
+            LastErrorText = errorMes;
+            LastError = errorCode;
         }
 
         public static void MessageBoxShow(string mes)
@@ -917,16 +989,10 @@ namespace DatecsEcr
             System.Windows.Forms.MessageBox.Show(mes);
         }
 
-        private void ClassPropertiesValueUpdate(List<string> dataList = null)
+        private void ClassPropertiesValueUpdate(object sender, DataUpdatedEventArgs e)
         {
             FieldInfo[] fieldsInfos = GetType().GetFields();
-            foreach (var item in fieldsInfos)
-            {
-                if (item.Name.StartsWith("s"))
-                {
-                    item.SetValue(this, string.Empty);
-                }
-            }
+            List<string> dataList = MHelper.GetStringListFromByteArray(e.DataToHost);
             if (dataList != null)
             {
                 for (int i = 0; i < dataList.Count; i++)

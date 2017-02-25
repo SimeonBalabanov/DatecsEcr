@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using DatecsEcr.FiscalLowLevel;
@@ -60,7 +61,7 @@ namespace DatecsEcr.Protocol.Datecs
         private byte _seq;
         private readonly Random _nextValue = new Random();
 
-        public static IProtocol GetDatecsPrinterPort(int portName, int baudRate = 0)
+        public static IProtocol GetDatecsPrinterPort(int portName, int baudRate)
         {
             return new Datecs(new CDatecsCom(portName, baudRate));
         }
@@ -335,9 +336,10 @@ namespace DatecsEcr.Protocol.Datecs
         private void DataUpdateEventGenerate()
         {
             RefreshData();
-            if (DataUpdated != null)
+            if (DataUpdated != null && StatusErrorOccured != null)
             {
                 DataUpdated(this, new DataUpdatedEventArgs(CommandToPrinter, DataToHost, DataToPrinter, Status));
+                StatusErrorOccured(this, new ErrorMessagesEventArgs(string.Empty, 0));
             }
         }
 

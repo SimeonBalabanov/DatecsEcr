@@ -26,7 +26,8 @@ namespace TestProject
             //Process.Start(reg);
 
             FiscalPrinter ecr = new FiscalPrinter();
-            ecr.OpenPort(1, 115200);
+           // ecr.OpenPort(2, 115200);
+            ecr.OpenPort(1, 6320);
 
             ecr.PrintDiagnosticInfo();
             //ecr.GetDateTime();

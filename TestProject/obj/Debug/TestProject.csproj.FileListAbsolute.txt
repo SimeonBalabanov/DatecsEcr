@@ -14,3 +14,11 @@ C:\Users\Администратор\Desktop\РРО\DatecsEcr\TestProject\bin\Deb
 C:\Users\Администратор\Desktop\РРО\DatecsEcr\TestProject\bin\Debug\DatecsEcr.dll
 C:\Users\Администратор\Desktop\РРО\DatecsEcr\TestProject\bin\Debug\DatecsEcr.pdb
 C:\Users\Администратор\Desktop\РРО\DatecsEcr\TestProject\obj\Debug\TestProject.csprojResolveAssemblyReference.cache
+C:\Users\Администратор.000\Desktop\РРО\DatecsEcr\TestProject\bin\Debug\TestProject.exe.config
+C:\Users\Администратор.000\Desktop\РРО\DatecsEcr\TestProject\obj\Debug\TestProject.exe
+C:\Users\Администратор.000\Desktop\РРО\DatecsEcr\TestProject\obj\Debug\TestProject.pdb
+C:\Users\Администратор.000\Desktop\РРО\DatecsEcr\TestProject\bin\Debug\TestProject.exe
+C:\Users\Администратор.000\Desktop\РРО\DatecsEcr\TestProject\bin\Debug\TestProject.pdb
+C:\Users\Администратор.000\Desktop\РРО\DatecsEcr\TestProject\bin\Debug\DatecsEcr.dll
+C:\Users\Администратор.000\Desktop\РРО\DatecsEcr\TestProject\bin\Debug\DatecsEcr.pdb
+C:\Users\Администратор.000\Desktop\РРО\DatecsEcr\TestProject\obj\Debug\TestProject.csprojResolveAssemblyReference.cache

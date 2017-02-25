@@ -26,25 +26,12 @@ namespace DatecsEcr.FiscalLowLevel.Datecs
 
         public CDatecsCom(int port, int baudRate)
         {
-            if (baudRate != 9600 && baudRate != 19200 && baudRate != 57600 && baudRate != 115200)
+            _port = new SerialPort("COM" + port, baudRate, Parity.None, 8, StopBits.One)
             {
-                ErrorOccurenceEventGenerated("Неверная скорость СОМ порта. Установлена скорость по умолчанию - 115200", 5);
-                _port = new SerialPort("COM" + port, 115200, Parity.None, 8, StopBits.One)
-                {
-                    Encoding = Encoding.Default,
-                    WriteTimeout = 1000,
-                    ReadTimeout = 1000
-                };
-            }
-            else
-            {
-                _port = new SerialPort("COM" + port, baudRate, Parity.None, 8, StopBits.One)
-                {
-                    Encoding = Encoding.Default,
-                    WriteTimeout = 1000,
-                    ReadTimeout = 1000
-                };
-            }
+                Encoding = Encoding.Default,
+                WriteTimeout = 1000,
+                ReadTimeout = 1000
+            };
         }
 
         public void ClearSubscribers()
@@ -57,6 +44,7 @@ namespace DatecsEcr.FiscalLowLevel.Datecs
             try
             {
                 _port.Open();
+                ErrorOccurenceEventGenerated(string.Empty, 0);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -231,7 +219,7 @@ namespace DatecsEcr.FiscalLowLevel.Datecs
             ErrorMessage = error;
             if (ErrorOccurrence != null)
             {
-                ErrorOccurrence(this, new ErrorMessagesEventArgs(error, errNum != 0 ? errNum : 999));
+                ErrorOccurrence(this, new ErrorMessagesEventArgs(error, errNum));
             }
         }
 
