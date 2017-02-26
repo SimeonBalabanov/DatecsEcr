@@ -317,7 +317,7 @@ namespace DatecsEcr.Protocol.Datecs
                 DataUpdateEventGenerate();
                 return true;
             }
-            //StatusErrorOccurenceEventGenerate("Ошибка чтения порта", 1);
+            //StatusErrorOccurenceEventGenerate("Ошибка записи или чтения порта", 1);
             return false;
         }
 
@@ -339,7 +339,7 @@ namespace DatecsEcr.Protocol.Datecs
             if (DataUpdated != null && StatusErrorOccured != null)
             {
                 DataUpdated(this, new DataUpdatedEventArgs(CommandToPrinter, DataToHost, DataToPrinter, Status));
-                StatusErrorOccured(this, new ErrorMessagesEventArgs(string.Empty, 0));
+                StatusErrorOccured(this, new ErrorMessagesEventArgs(string.Empty));
             }
         }
 

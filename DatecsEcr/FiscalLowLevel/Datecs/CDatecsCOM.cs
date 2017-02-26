@@ -44,7 +44,7 @@ namespace DatecsEcr.FiscalLowLevel.Datecs
             try
             {
                 _port.Open();
-                ErrorOccurenceEventGenerated(string.Empty, 0);
+                ErrorOccurenceEventGenerated(string.Empty);
             }
             catch (UnauthorizedAccessException ex)
             {

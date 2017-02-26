@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mime;
 using System.Reflection;
 using DatecsEcr.Protocol;
 using DatecsEcr.Protocol.Datecs;
 using DatecsEcr.Helper;
 using System.Runtime.InteropServices;
 using System.Text;
-using DatecsEcr.FiscalLowLevel;
 
 namespace DatecsEcr
 {
@@ -50,28 +50,28 @@ namespace DatecsEcr
 
         public void OpenPort(int portNum, int baudRate)
         {
+            MHelper.WriteLog("Библиотека для РРО КБМ Групп" + "(Версия 1.0.0.2)");
             if (baudRate == 9600 || baudRate == 19200 || baudRate == 57600 || baudRate == 115200)
             {
                 _datecsPort = Datecs.GetDatecsPrinterPort(portNum, baudRate);
             }
             else
             {
-                MHelper.WriteLog("Неверная скорость СОМ порта,  будет установлена 115200 бод", LogType.Error);
+                ErrorPropertiesUpdate("Неверная скорость СОМ порта,  будет установлена 115200", 1);
                 _datecsPort = Datecs.GetDatecsPrinterPort(portNum, 115200);
             }
             _datecsPort.EventHandlersAddRemove(UpdateDataEventHandler, ErrorPropertiesEventHandler, ErrorPropertiesEventHandler);
+            _datecsPort.EventHandlersAddRemove(MHelper.DataUpdateHandler,
+                MHelper.ErrorHandler, MHelper.StatusUpdateHandler);
             if (_datecsPort.PortOpen())
             {
                 MHelper.WriteLog("Port COM" + portNum + " is opened");
                 _datecsPort.SendCommand(Commands.DiagnosticInfo);
-                if (!s6.StartsWith("КБ") || !s6.StartsWith("БМ"))
+                if ((!s6.StartsWith("КБ") || !s6.StartsWith("БМ")) && s6.Length > 3)
                 {
                     ErrorPropertiesUpdate("Ошибка лицензии. Заводской номер должен начинаться с КБ или БМ.", 8);
-                    MHelper.WriteLog("Ошибка лицензии. Заводской номер должен начинаться с КБ или БМ.", LogType.Error);
                     ClosePort();
                 }
-                _datecsPort.EventHandlersAddRemove(MHelper.AfterDataUpdateHandler,
-                    MHelper.ErrorHandler, MHelper.AfterStatusUpdateHandler);
             }
         }
 
@@ -214,11 +214,11 @@ namespace DatecsEcr
                     ErrorPropertiesUpdate("Ошибка фискализации. Не установлены дата/время", 21);
                     break;
                 default:
+                    MHelper.WriteLog("Fiscalise(string passwd, string serial, string taxnum, int taxNumType)." + serial + " " +
+                             taxnum + " " + taxNumType);
                     ErrorPropertiesUpdate(string.Empty, 0);
                     break;
             }
-            MHelper.WriteLog("Fiscalise(string passwd, string serial, string taxnum, int taxNumType)." + serial + " " +
-                             taxnum + " " + taxNumType);
         }
 
         public void SetMulDecCurRF(string passwd, int dec, string enableTax, double taxA, double taxB, double taxC, double taxD)
@@ -231,24 +231,46 @@ namespace DatecsEcr
 
         public void SetTaxType(int type)
         {
+            // not actual
         }
 
         public void SetSerialNumber(string serial)
         {
             _datecsPort.SendCommand(Commands.SerialNumberSet, "2", serial);
-            MHelper.WriteLog("SetSerialNumber(string serial) is " + serial);
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка установки заводского номера", 22);
+            }
+            else
+            {
+                MHelper.WriteLog("SetSerialNumber(string serial) is " + serial);    
+            }
         }
 
         public void SetFiscalNumber(string fNumber)
         {
             _datecsPort.SendCommand(Commands.FiscalNumberSet, fNumber);
-            MHelper.WriteLog("SetFiscalNumber(string fNumber) is " + fNumber);
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка установки фискального номера", 23);
+            }
+            else
+            {
+                MHelper.WriteLog("SetFiscalNumber(string fNumber) is " + fNumber);
+            }
         }
 
         public void SetTaxNumber(string taxNum, int type)
         {
             _datecsPort.SendCommand(Commands.PersonalNumberSet, taxNum, type.ToString());
-            MHelper.WriteLog("SetTaxNumber(string taxNum, int type) is " + taxNum);
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка установки налогового номера", 24);
+            }
+            else
+            {
+                MHelper.WriteLog("SetTaxNumber(string taxNum, int type) is " + taxNum);
+            }
         }
 
         public void SetOperatorPassword(int opNum, string oldPasswd, string newPasswd)
@@ -286,19 +308,29 @@ namespace DatecsEcr
         public void GetArticlesInfo()
         {
             _datecsPort.SendCommand(Commands.ProgramArticles, "I");
-            MHelper.WriteLog("GetArticlesInfo() ");
+            MHelper.WriteLog("GetArticlesInfo()");
         }
 
         public void SetArticle(int artNum, int taxGrp, int grp, double price, string passwd, string name)
         {
             char taxName = MHelper.GetTaxNameFromNumber(taxGrp);
             _datecsPort.SendCommand(Commands.ProgramArticles, "P" + taxName + artNum,  grp.ToString(), price.ToString(), passwd, name);
-            MHelper.WriteLog("SetArticle(int artNum, int taxGrp, int grp, double price, string passwd, string name)");
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка чтения/программирования артикула", 34);
+                return;
+            }
+            MHelper.WriteLog("SetArticle(int artNum, int taxGrp, int grp, double price, string passwd, string name) " + artNum);
         }
 
         public void DelArticle(string passwd, int artNum)
         {
             _datecsPort.SendCommand(Commands.ProgramArticles, "D" + (artNum == 0 ? "A," + passwd : artNum + "," + passwd));
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка чтения/программирования артикула", 34);
+                return;
+            }
             MHelper.WriteLog("DelArticle(string passwd, int artNum) " + artNum);
         }
 
@@ -308,10 +340,15 @@ namespace DatecsEcr
             List<string> tmpList = MHelper.GetStringListFromByteArray(_datecsPort.DataToHost);
             if (tmpList[0].StartsWith("P") && tmpList[0].Length > 1)
             {
-                tmpList[0] = tmpList[0].Replace("P", "");
+                tmpList[0] = tmpList[0].Replace("P", string.Empty);
                 tmpList.Insert(0, "P");
             }
             PropertiesUpdate(tmpList);
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка чтения/программирования артикула", 34);
+                return;
+            }
             MHelper.WriteLog("GetArticle(int artNum) " + artNum);
         }
 
@@ -321,7 +358,7 @@ namespace DatecsEcr
             List<string> tmpList = MHelper.GetStringListFromByteArray(_datecsPort.DataToHost);
             if (tmpList[0].StartsWith("P") && tmpList[0].Length > 1)
             {
-                tmpList[0] = tmpList[0].Replace("P", "");
+                tmpList[0] = tmpList[0].Replace("P", string.Empty);
                 tmpList.Insert(0, "P");
             }
             PropertiesUpdate(tmpList);
@@ -334,16 +371,26 @@ namespace DatecsEcr
             List<string> tmpList = MHelper.GetStringListFromByteArray(_datecsPort.DataToHost);
             if (tmpList[0].StartsWith("P") && tmpList[0].Length > 1)
             {
-                tmpList[0] = tmpList[0].Replace("P", "");
+                tmpList[0] = tmpList[0].Replace("P", string.Empty);
                 tmpList.Insert(0, "P");
             }
             PropertiesUpdate(tmpList);
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка чтения/программирования артикула", 34);
+                return;
+            }
             MHelper.WriteLog("GetNextArticle()");
         }
 
         public void ChangeArticlePrice(string passwd, int artNum, double price)
         {
             _datecsPort.SendCommand(Commands.ProgramArticles, "C" + artNum, price.ToString(), passwd);
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка чтения/программирования артикула", 34);
+                return;
+            }
             MHelper.WriteLog("ChangeArticlePrice(string passwd, int artNum, double price) is " + artNum + " . Price is " + price);
         }
 
@@ -357,6 +404,11 @@ namespace DatecsEcr
                 tmpList.Insert(0, "P");
             }
             PropertiesUpdate(tmpList);
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка чтения/программирования артикула", 34);
+                return;
+            }
             MHelper.WriteLog("GetFirstFreeArticle()");
         }
 
@@ -370,6 +422,11 @@ namespace DatecsEcr
                 tmpList.Insert(0, "P");
             }
             PropertiesUpdate(tmpList);
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка чтения/программирования артикула", 34);
+                return;
+            }
             MHelper.WriteLog("GetLastFreeArticle()");
         }
 
@@ -389,6 +446,10 @@ namespace DatecsEcr
                     break;
                 case "4":
                     ErrorPropertiesUpdate("Ошибка открытия нефискального чека. Не установлены дата/время", 28);
+                    break;
+                default:
+                    MHelper.WriteLog("OpenNonfiscalReceipt()");
+                    ErrorPropertiesUpdate(string.Empty, 0);
                     break;
             }
         }
@@ -434,7 +495,6 @@ namespace DatecsEcr
             else
             {
                 ErrorPropertiesUpdate("Не правильные параметры функции", -1);
-                MHelper.WriteLog("Error add item sum discount and abs discount not 0.00", LogType.Error);
             }
         }
 
@@ -461,7 +521,6 @@ namespace DatecsEcr
             else
             {
                 ErrorPropertiesUpdate("Не правильные параметры функции", -1);
-                MHelper.WriteLog("Error add item sum discount and abs discount not 0.00", LogType.Error);
             }
         }
 
@@ -488,25 +547,24 @@ namespace DatecsEcr
             else
             {
                 ErrorPropertiesUpdate("Не правильные параметры функции", -1);
-                MHelper.WriteLog("Error add item sum discount and abs discount not 0.00", LogType.Error);
             }
         }
 
         public void RegistrAndDisplayItemEx(int artNum, double quantity, double price, double percDisc, double sumDisc)
         {
-            if (percDisc == 0 && sumDisc == 0)
+            if (percDisc == 0.00 && sumDisc == 0.00)
             {
                 _datecsPort.SendCommand(Commands.SalesRegister, "+" + artNum + "*" + quantity + "#" + price);
                 MHelper.WriteLog("RegistrAndDisplayItemEx(int artNum, double quantity, double price, double percDisc, double sumDisc). PLU -  " +
                                  artNum + ". Quantity - " + quantity);
             }
-            else if (percDisc != 0 && sumDisc == 0)
+            else if (percDisc != 0.00 && sumDisc == 0.00)
             {
                 _datecsPort.SendCommand(Commands.SalesRegister, "+" + artNum + "*" + quantity + "#" + price, percDisc.ToString());
                 MHelper.WriteLog("RegistrAndDisplayItemEx(int artNum, double quantity, double price, double percDisc, double sumDisc). PLU -  " +
                                  artNum + ". Quantity - " + quantity + ". Perc discount - " + percDisc);
             }
-            else if (percDisc == 0 && sumDisc != 0)
+            else if (percDisc == 0.00 && sumDisc != 0.00)
             {
                 _datecsPort.SendCommand(Commands.SalesRegister, "+" + artNum + "*" + quantity + "#" + price + ";" + sumDisc);
                 MHelper.WriteLog("RegistrAndDisplayItemEx(int artNum, double quantity, double price, double percDisc, double sumDisc). PLU -  " +
@@ -515,7 +573,6 @@ namespace DatecsEcr
             else
             {
                 ErrorPropertiesUpdate("Не правильные параметры функции", -1);
-                MHelper.WriteLog("Error add item sum discount and abs discount not 0.00", LogType.Error);
             }
         }
 
@@ -527,8 +584,11 @@ namespace DatecsEcr
 
         public void SubTotal(double percDisc, double sumDisc)
         {
-            if(percDisc != 0 && sumDisc != 0)
+            if (percDisc != 0.00 && sumDisc != 0)
+            {
+                ErrorPropertiesUpdate("Не правильные параметры функции", -1);
                 return;
+            }
             _datecsPort.SendCommand(Commands.SubTotalDiscAllow,
                 "11" + (percDisc != 0 ? "," + percDisc : "") + (sumDisc != 0 ? ";" + sumDisc : ""));
             MHelper.WriteLog("SubTotal(double percDisc, double sumDisc). Percent - " + percDisc + ". Sum - " + sumDisc);
@@ -539,7 +599,26 @@ namespace DatecsEcr
             char payName = MHelper.GetPayNameFromNumber(payMode);
             _datecsPort.SendCommand(Commands.SumTotal, text + '\t' + (payMode == 1 ? payName + sum : payName));
             string tmpString = MHelper.GetStringFromByteArray(_datecsPort.DataToHost).Substring(1);
+            PropertiesUpdate(new List<string> { _datecsPort.DataToHost[0].ToString(), tmpString });
             MHelper.WriteLog("Total(string text, int payMode, double sum). Sum " + sum + ". Payment type - " + payName + ". Text - " + text);
+            switch (s1)
+            {
+                case "F":
+                    ErrorPropertiesUpdate("Ошибка операции всего", 29);
+                    break;
+                case "E":
+                    ErrorPropertiesUpdate("Ошибка операции всего. Вычисленная сумма орицательна", 30);
+                    break;
+                case "D":
+                    ErrorPropertiesUpdate("Ошибка операции всего. Внесенной сумы недостаточно.", 31);
+                    break;
+                case "R":
+                    ErrorPropertiesUpdate("Ошибка операции всего. Внесенная сумма больше чем сумма по чеку", 32);
+                    break;
+                case "I":
+                    ErrorPropertiesUpdate("Ошибка операции всего. Сумма по некторым налоговым группам отрицательна", 33);
+                    break;
+            }
         }
 
         public void TotalEx(string text, int payMode, double sum)
@@ -547,12 +626,31 @@ namespace DatecsEcr
             char payName = MHelper.GetPayNameFromNumber(payMode);
             _datecsPort.SendCommand(Commands.PaymentAndCloseRecipt, text + '\t' + (payMode == 1 ? payName + sum : payName));
             string tmpString = MHelper.GetStringFromByteArray(_datecsPort.DataToHost).Substring(1);
+            PropertiesUpdate(new List<string> { _datecsPort.DataToHost[0].ToString(), tmpString });
             MHelper.WriteLog("TotalEx(string text, int payMode, double sum). Sum " + sum + ". Payment type - " + payName + ". Text - " + text);
+            switch (s1)
+            {
+                case "F":
+                    ErrorPropertiesUpdate("Ошибка операции всего", 29);
+                    break;
+                case "E":
+                    ErrorPropertiesUpdate("Ошибка операции всего. Вычисленная сумма орицательна", 30);
+                    break;
+                case "D":
+                    ErrorPropertiesUpdate("Ошибка операции всего. Внесенной сумы недостаточно.", 31);
+                    break;
+                case "R":
+                    ErrorPropertiesUpdate("Ошибка операции всего. Внесенная сумма больше чем сумма по чеку", 32);
+                    break;
+                case "I":
+                    ErrorPropertiesUpdate("Ошибка операции всего. Сумма по некторым налоговым группам отрицательна", 33);
+                    break;
+            }
         }
 
         public void PrintBarCode(int type, string text)
         {
-            _datecsPort.SendCommand(Commands.BarQrCodePrint, type.ToString(), text);
+            _datecsPort.SendCommand(Commands.BarQrCodePrint, type == 6 ? "Q" : type.ToString(), text);
             MHelper.WriteLog("PrintBarCode(int type, string text). Type - " + type + ". Text - " + text);
         }
 
@@ -590,7 +688,7 @@ namespace DatecsEcr
         {
             OpenFiscalReceipt(1, "0000", 1);
             PrintFiscalText("НУЛЕВОЙ ЧЕК");
-            Total("", 1, 0.00);
+            Total(string.Empty, 1, 0.00);
             CloseFiscalReceipt();
             MHelper.WriteLog("PrintNullCheck()");
         }
@@ -778,7 +876,7 @@ namespace DatecsEcr
 
         public int isFiscalized()
         {
-            return 0;
+            return 1;
         }
 
         public void GetSmenLen()
@@ -789,10 +887,7 @@ namespace DatecsEcr
 
         public void GetLastClosureDate()
         {
-            _datecsPort.SendCommand(Commands.LastFiscalClosureInfo, "0");
-            List<string> tmpList = MHelper.GetStringListFromByteArray(_datecsPort.DataToHost);
-            tmpList[0] = tmpList[0].Substring(1);
-            PropertiesUpdate(tmpList);
+            _datecsPort.SendCommand(Commands.GetLastReportDate);
             MHelper.WriteLog("GetLastClosureDate()");
         }
 
@@ -862,7 +957,15 @@ namespace DatecsEcr
         public void InOut(double sum)
         {
             _datecsPort.SendCommand(Commands.SericeInOut, sum.ToString());
-            MHelper.WriteLog("InOut(double sum) = " + sum);
+            if (s1 == "F")
+            {
+                ErrorPropertiesUpdate("Ошибка служебного внесения/выдачи", 35);
+            }
+            else
+            {
+                MHelper.WriteLog("InOut(double sum) = " + sum);
+            }
+
         }
 
         public void PrintDiagnosticInfo()
@@ -898,6 +1001,7 @@ namespace DatecsEcr
         {
             LastErrorText = errorMes;
             LastError = errorCode;
+            if(errorCode != 0)MHelper.WriteLog(errorMes + " " + errorCode, LogType.Error);
         }
 
         public static void MessageBoxShow(string mes)

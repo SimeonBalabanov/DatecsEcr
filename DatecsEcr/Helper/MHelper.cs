@@ -251,58 +251,58 @@ namespace DatecsEcr.Helper
 
         public static void WriteLog(string text, LogType type = LogType.Normal, bool isMessageErrorShow = false)
         {
-            StreamWriter SW;
-            FileStream FS;
+            StreamWriter sw;
+            FileStream fs;
             try
             {
-                string filename_log = AppDomain.CurrentDomain.BaseDirectory + "datecs_dll.log";
-                string filename_critical_log = AppDomain.CurrentDomain.BaseDirectory + "datecs_dll_err.log";
+                string filenameLog = AppDomain.CurrentDomain.BaseDirectory + "datecs_dll.log";
+                string filenameCriticalLog = AppDomain.CurrentDomain.BaseDirectory + "datecs_dll_err.log";
 
                 switch (type)
                 {
                     case LogType.Normal:
-                        FS = new FileStream(filename_log, FileMode.Append);
+                        fs = new FileStream(filenameLog, FileMode.Append);
                         break;
                     case LogType.Error:
-                        FS = new FileStream(filename_critical_log, FileMode.Append);
+                        fs = new FileStream(filenameCriticalLog, FileMode.Append);
                         if(isMessageErrorShow)System.Windows.Forms.MessageBox.Show(text);
                         break;
                     default:
-                        FS = new FileStream(filename_log, FileMode.Append);
+                        fs = new FileStream(filenameLog, FileMode.Append);
                         break;
                 }
-                SW = new StreamWriter(FS, Encoding.GetEncoding("utf-8"));
-                SW.WriteLine(DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + " === " + text);
-                SW.Flush();
-                SW.Close();
-                FS.Close();
+                sw = new StreamWriter(fs, Encoding.GetEncoding("utf-8"));
+                sw.WriteLine(DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + " === " + text);
+                sw.Flush();
+                sw.Close();
+                fs.Close();
             }
             catch (Exception e)
             {
-                string filename_critical_log = AppDomain.CurrentDomain.BaseDirectory + "datecs_dll_err.log";
-                FS = new FileStream(filename_critical_log, FileMode.Append);
-                SW = new StreamWriter(FS, Encoding.GetEncoding("utf-8"));
-                SW.WriteLine(DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + " === " + e.Message);
-                SW.Flush();
-                SW.Close();
-                FS.Close();
+                string filenameCriticalLog = AppDomain.CurrentDomain.BaseDirectory + "datecs_dll_err.log";
+                fs = new FileStream(filenameCriticalLog, FileMode.Append);
+                sw = new StreamWriter(fs, Encoding.GetEncoding("utf-8"));
+                sw.WriteLine(DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + " === " + e.Message);
+                sw.Flush();
+                sw.Close();
+                fs.Close();
             }
         }
 
         public static void ErrorHandler(object sender, ErrorMessagesEventArgs e)
         {
-            WriteLog(e.ErrorMessages + " " + e.ErrorCode, LogType.Error);
+            if(e.ErrorCode != 0)WriteLog(e.ErrorMessages + " " + e.ErrorCode, LogType.Error);
         }
 
-        public static void AfterDataUpdateHandler(object sender, DataUpdatedEventArgs e)
+        public static void DataUpdateHandler(object sender, DataUpdatedEventArgs e)
         {
             WriteLog("Command: " + e.Command[3] + ". Data: " +
                      Encoding.Default.GetString(e.DataToPrinter));
         }
 
-        public static void AfterStatusUpdateHandler(object sender, ErrorMessagesEventArgs e)
+        public static void StatusUpdateHandler(object sender, ErrorMessagesEventArgs e)
         {
-            WriteLog(e.ErrorMessages + " " + e.ErrorCode, LogType.Error);
+            if(e.ErrorCode != 0)WriteLog(e.ErrorMessages + " " + e.ErrorCode, LogType.Error);
         }
 
         public static char GetTaxNameFromNumber(int taxGrp)

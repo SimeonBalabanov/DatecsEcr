@@ -108,6 +108,7 @@ namespace DatecsEcr.Protocol.Datecs
         Sound = 80,
         TaxSet = 83,
         OpenReturnReceipt = 85,
+        GetLastReportDate = 86,
         AdditionalPaymentType = 87,
         BarQrCodePrint = 88,
         DiagnosticInfo = 90,
@@ -141,7 +142,7 @@ namespace DatecsEcr.Protocol.Datecs
         FmErase = 130,
         FmFormatting = 131,
         PrintDisable = 133,
-        FiscalMemoryWrite = 135, // 135,адрес,количество байт(32), байты
+        FiscalMemoryWrite = 135, 
         ControlTapeFormatting = 136
     };
 
