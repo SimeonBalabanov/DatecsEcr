@@ -272,7 +272,7 @@ namespace DatecsEcr.Helper
                         break;
                 }
                 sw = new StreamWriter(fs, Encoding.GetEncoding("utf-8"));
-                sw.WriteLine(DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + " === " + text);
+                sw.WriteLine(DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff") + " === " + text);
                 sw.Flush();
                 sw.Close();
                 fs.Close();
@@ -282,7 +282,7 @@ namespace DatecsEcr.Helper
                 string filenameCriticalLog = AppDomain.CurrentDomain.BaseDirectory + "datecs_dll_err.log";
                 fs = new FileStream(filenameCriticalLog, FileMode.Append);
                 sw = new StreamWriter(fs, Encoding.GetEncoding("utf-8"));
-                sw.WriteLine(DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + " === " + e.Message);
+                sw.WriteLine(DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff") + " === " + e.Message);
                 sw.Flush();
                 sw.Close();
                 fs.Close();
@@ -291,18 +291,19 @@ namespace DatecsEcr.Helper
 
         public static void ErrorHandler(object sender, ErrorMessagesEventArgs e)
         {
-            if(e.ErrorCode != 0)WriteLog(e.ErrorMessages + " " + e.ErrorCode, LogType.Error);
+            if(e.ErrorCode != 0)WriteLog(e.ErrorMessages + ". Error code: " + e.ErrorCode, LogType.Error);
         }
 
         public static void DataUpdateHandler(object sender, DataUpdatedEventArgs e)
         {
             WriteLog("Command: " + e.Command[3] + ". Data: " +
                      Encoding.Default.GetString(e.DataToPrinter));
+            WriteLog("Data from printer: " + Encoding.Default.GetString(e.DataToHost));
         }
 
         public static void StatusUpdateHandler(object sender, ErrorMessagesEventArgs e)
         {
-            if(e.ErrorCode != 0)WriteLog(e.ErrorMessages + " " + e.ErrorCode, LogType.Error);
+            if(e.ErrorCode != 0)WriteLog(e.ErrorMessages + ". Error code: " + e.ErrorCode, LogType.Error);
         }
 
         public static char GetTaxNameFromNumber(int taxGrp)

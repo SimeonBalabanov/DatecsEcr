@@ -50,7 +50,7 @@ namespace DatecsEcr
 
         public void OpenPort(int portNum, int baudRate)
         {
-            MHelper.WriteLog("Библиотека для РРО КБМ Групп" + "(Версия 1.0.0.2)");
+            MHelper.WriteLog("Библиотека для РРО КБМ Групп" + "(Версия 1.0.0.3). 27 февраля 2017 года.");
             if (baudRate == 9600 || baudRate == 19200 || baudRate == 57600 || baudRate == 115200)
             {
                 _datecsPort = Datecs.GetDatecsPrinterPort(portNum, baudRate);
@@ -67,10 +67,13 @@ namespace DatecsEcr
             {
                 MHelper.WriteLog("Port COM" + portNum + " is opened");
                 _datecsPort.SendCommand(Commands.DiagnosticInfo);
-                if ((!s6.StartsWith("КБ") || !s6.StartsWith("БМ")) && s6.Length > 3)
+                if (s6.Length == 10)
                 {
-                    ErrorPropertiesUpdate("Ошибка лицензии. Заводской номер должен начинаться с КБ или БМ.", 8);
-                    ClosePort();
+                    if (!s6.StartsWith("КБ") && !s6.StartsWith("БМ"))
+                    {
+                        ErrorPropertiesUpdate("Ошибка лицензии. Заводской номер должен начинаться с КБ или БМ.", 8);
+                        ClosePort();
+                    }
                 }
             }
         }
@@ -823,24 +826,25 @@ namespace DatecsEcr
         public void GetStatus(bool wait)
         {
             _datecsPort.SendCommand(Commands.PrinterStatus, wait ? "W" : "X");
+            s1 = MHelper.BitConverterToString(_datecsPort.DataToHost);
             MHelper.WriteLog("GetStatus(bool wait) Wait for print buffer clean? -" + wait);
         }
 
         public void GetFiscalClosureStatus(bool current)
         {
-            _datecsPort.SendCommand(Commands.FiscalTransactionStatus, current ? "T" : "");
+            _datecsPort.SendCommand(Commands.FiscalTransactionStatus, current ? "T" : string.Empty);
             MHelper.WriteLog("GetFiscalClosureStatus(bool current)");
         }
 
         public void GetDiagnosticInfo(bool calcCrc)
         {
-            _datecsPort.SendCommand(Commands.DiagnosticInfo, calcCrc ? "1" : "");
+            _datecsPort.SendCommand(Commands.DiagnosticInfo, calcCrc ? "1" : string.Empty);
             MHelper.WriteLog("GetDiagnosticInfo(bool calcCrc). Crc calculate ? -" + calcCrc);
         }
 
         public void GetCurrentTaxRates()
         {
-            _datecsPort.SendCommand(Commands.CurrentTax);
+            _datecsPort.SendCommand(Commands.CurrentTax, "#");
             MHelper.WriteLog("GetCurrentTaxRates()");
         }
 
