@@ -601,8 +601,8 @@ namespace DatecsEcr
         {
             char payName = MHelper.GetPayNameFromNumber(payMode);
             _datecsPort.SendCommand(Commands.SumTotal, text + '\t' + (payMode == 1 ? payName + sum : payName));
-            string tmpString = MHelper.GetStringFromByteArray(_datecsPort.DataToHost).Substring(1);
-            PropertiesUpdate(new List<string> { _datecsPort.DataToHost[0].ToString(), tmpString });
+            string tmpString = MHelper.GetStringFromByteArray(_datecsPort.DataToHost);
+            PropertiesUpdate(new List<string> { tmpString.Substring(0, 1), tmpString.Substring(1) });
             MHelper.WriteLog("Total(string text, int payMode, double sum). Sum " + sum + ". Payment type - " + payName + ". Text - " + text);
             switch (s1)
             {
@@ -628,8 +628,8 @@ namespace DatecsEcr
         {
             char payName = MHelper.GetPayNameFromNumber(payMode);
             _datecsPort.SendCommand(Commands.PaymentAndCloseRecipt, text + '\t' + (payMode == 1 ? payName + sum : payName));
-            string tmpString = MHelper.GetStringFromByteArray(_datecsPort.DataToHost).Substring(1);
-            PropertiesUpdate(new List<string> { _datecsPort.DataToHost[0].ToString(), tmpString });
+            string tmpString = MHelper.GetStringFromByteArray(_datecsPort.DataToHost);
+            PropertiesUpdate(new List<string> { tmpString.Substring(0, 1), tmpString.Substring(1) });
             MHelper.WriteLog("TotalEx(string text, int payMode, double sum). Sum " + sum + ". Payment type - " + payName + ". Text - " + text);
             switch (s1)
             {

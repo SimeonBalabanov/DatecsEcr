@@ -29,14 +29,8 @@ namespace TestProject
            // ecr.OpenPort(2, 115200);
             ecr.OpenPort(1, 115200);
 
-            ecr.GetArticlesInfo();
-            ecr.GetStatus(true);
-            ecr.GetDateTime();
-            ecr.GetCurrentSums(1);
-            ecr.GetCurrentTaxRates();
-            ecr.GetFreeClosures();
-            ecr.GetLastDPAExchangeTime();
-            ecr.GetTaxNumber();
+            ecr.Total("   ", 1, 200.00);
+
             //ecr.GetDateTime();
             Console.WriteLine(ecr.s1);
             //  ecr.PrintDiagnosticInfo();
