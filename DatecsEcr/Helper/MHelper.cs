@@ -200,12 +200,21 @@ namespace DatecsEcr.Helper
 
         public static string GetShortStringFromDateTime(DateTime date)
         {
-            return date.ToString().Replace(".", "").Replace("-", "").Replace(":", "").Replace(" ", "").Replace(date.Year.ToString(), date.Year.ToString().Substring(2));
+            return
+                date.ToString()
+                    .Replace(".", string.Empty)
+                    .Replace("-", string.Empty)
+                    .Replace(":", string.Empty)
+                    .Replace(" ", string.Empty)
+                    .Replace(date.Year.ToString(), date.Year.ToString().Substring(2));
         }
 
         public static string GetShortStringFromStringDate(string date)
         {
-            return date.Replace(".", "").Replace("-", "").Replace(":", "").Replace(" ", "");
+            return date.Replace(".", string.Empty)
+                .Replace("-", string.Empty)
+                .Replace(":", string.Empty)
+                .Replace(" ", string.Empty);
         }
 
         public static string DateTimeToPrinterFormat(DateTime date)
@@ -213,7 +222,11 @@ namespace DatecsEcr.Helper
             string result;
             try
             {
-                result = date.AddMinutes(-3).ToString().Replace(date.Year.ToString(), date.Year.ToString().Substring(2)).Replace(".", "-");
+                result =
+                    date.AddMinutes(-3)
+                        .ToString()
+                        .Replace(date.Year.ToString(), date.Year.ToString().Substring(2))
+                        .Replace(".", "-");
             }
             catch (ArgumentOutOfRangeException)
             {

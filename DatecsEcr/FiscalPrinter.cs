@@ -781,7 +781,6 @@ namespace DatecsEcr
             }
             _datecsPort.SendCommand(Commands.ArticlesReport, passwd, reportType);
             MHelper.WriteLog("PrintRepByArt(string passwd, int type)");
-
         }
 
         public void PrintRepByOperator(string passwd)
@@ -969,7 +968,6 @@ namespace DatecsEcr
             {
                 MHelper.WriteLog("InOut(double sum) = " + sum);
             }
-
         }
 
         public void PrintDiagnosticInfo()

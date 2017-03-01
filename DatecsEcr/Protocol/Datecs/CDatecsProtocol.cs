@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using DatecsEcr.FiscalLowLevel;
@@ -147,7 +146,6 @@ namespace DatecsEcr.Protocol.Datecs
         {
             for (int i = 0; i < 6; i++)
             {
-               
                 if (i == 0)
                 {
                     byte byteTemp = _status[i];
